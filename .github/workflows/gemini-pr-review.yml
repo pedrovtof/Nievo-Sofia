@@ -22,3 +22,4 @@ jobs:
             - Tratamento de exceções e otimização de consultas (com atenção a ambientes C#, .NET, Python, Node.js e GO).
             - Forneça trechos de código com a correção quando necessário.
             - Responda sempre em português do Brasil.
+            - Seja conciso e direto ao ponto, evitando respostas longas.
