@@ -24,14 +24,24 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-14 - [BUILD] - Configuração de normalização de quebras de linha e espaços em branco (.gitattributes e .editorconfig)
+
+Detalhes:
+
+- Criação do .gitattributes para normalização automática de LF e prevenção de conflitos de CRLF entre Windows, Mac e Linux - Pedro Victor - 2026-10-14 - Sem card - 52dd97f
+- Criação do .editorconfig para padronização de quebra de linha (LF), encoding (UTF-8) e remoção de espaços em branco nos editores - Pedro Victor - 2026-10-14 - Sem card - 52dd97f
+- Atualização do README.md com referências às boas práticas de normalização e editorconfig - Pedro Victor - 2026-10-14 - Sem card - 52dd97f
+
+---
+
 2026-10-14 - [DOC] - Resolução de sugestões do code review (SOLID, DI, logging, performance e formato de data ISO 8601)
 
 Detalhes:
 
-- Inclusão de diretrizes de SOLID (SRP/DIP) nos diagramas de classe - Pedro Victor - 2026-10-14 - Sem card - [PENDING]
-- Inclusão de diretrizes de DI, logging e monitoramento nos diagramas de sequência - Pedro Victor - 2026-10-14 - Sem card - [PENDING]
-- Inclusão de diretrizes de performance de queries no DBML - Pedro Victor - 2026-10-14 - Sem card - [PENDING]
-- Padronização do formato de data para YYYY-MM-DD (ISO 8601) no changelog e skill de commit - Pedro Victor - 2026-10-14 - Sem card - [PENDING]
+- Inclusão de diretrizes de SOLID (SRP/DIP) nos diagramas de classe - Pedro Victor - 2026-10-14 - Sem card - 6142b48
+- Inclusão de diretrizes de DI, logging e monitoramento nos diagramas de sequência - Pedro Victor - 2026-10-14 - Sem card - 6142b48
+- Inclusão de diretrizes de performance de queries no DBML - Pedro Victor - 2026-10-14 - Sem card - 6142b48
+- Padronização do formato de data para YYYY-MM-DD (ISO 8601) no changelog e skill de commit - Pedro Victor - 2026-10-14 - Sem card - 6142b48
 
 ---
 

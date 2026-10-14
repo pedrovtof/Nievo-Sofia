@@ -37,6 +37,8 @@ Boas práticas:
 * [Karma commit](https://karma-runner.github.io/4.0/dev/git-commit-msg.html)
 * [Branch](https://fga-eps-mds.github.io/2018.2-ComexStat/docs/politicaBranches)
 * [Versionamento](https://www.alura.com.br/artigos/versionamento-semantico-breve-introducao)
+* [Git Attributes & Line Endings](https://git-scm.com/docs/gitattributes)
+* [EditorConfig](https://editorconfig.org/)
 * [Python](https://peps.python.org/pep-0008/)
 * [JavaScript](https://google.github.io/styleguide/jsguide.html)
 * [React](https://handsonreact.com/docs/code-organization-conventions)

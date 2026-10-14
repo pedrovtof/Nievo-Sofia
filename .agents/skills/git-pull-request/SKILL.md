@@ -1,1 +1,1 @@
-../../../AI/GEMINI/skills/git/push-request.md
+../../../AI/GEMINI/skills/git/pull-request.md
