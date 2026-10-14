@@ -24,6 +24,14 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-14 - [BUILD] - Ajuste nas instruções do workflow de code review do Gemini
+
+Detalhes:
+
+- Inclusão de diretriz de concisão e objetividade nas revisões automáticas de PR - Pedro Victor - 2026-10-14 - Sem card - a4af0e9
+
+---
+
 2026-10-14 - [BUILD] - Configuração de normalização de quebras de linha e espaços em branco (.gitattributes e .editorconfig)
 
 Detalhes:
