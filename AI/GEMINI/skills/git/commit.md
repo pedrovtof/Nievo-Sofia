@@ -11,6 +11,10 @@ This skill defines the mandatory standard for creating git commit messages in th
 
 Every commit must be structured, meaningful, and written in natural language without AI-internal meta-comments.
 
+> [!IMPORTANT]
+> **No Remote Operations (Pull / Push) During Commit**:
+> The `git-commit` skill is strictly scoped to local staging and committing changes. It **must NEVER execute `git pull`** (or `git pull --rebase`) nor **`git push`** (or `git push --force`). Commits must remain atomic, deterministic, and isolated to local staged files. Pushing code to remote is strictly handled by the `git-pull-request` skill ([pull-request.md](./pull-request.md)), and remote pulling belongs to explicit branch setup. Never push or pull within commit execution.
+
 ---
 
 ## 2. Commit Message Structure
@@ -127,7 +131,7 @@ Detalhes:
 
 ### 4.3 Integrated Execution Workflow
 
-Whenever preparing a commit, follow this exact sequence:
+Whenever preparing a commit, follow this exact sequence (do **NOT** run `git pull` or `git push`):
 
 1. **Step 1: Check Git Diff & Date**:
    Determine the current date in ISO 8601 `YYYY-MM-DD` format and verify files being committed.
@@ -142,6 +146,9 @@ Whenever preparing a commit, follow this exact sequence:
    git commit -m "<type>(<scope>): <subject>" -m "Optional body..."
    ```
 
+> [!CAUTION]
+> Never prepend or append `git pull` or `git push` before or after `git commit`. Commits must be performed strictly against the local working branch state without implicit remote fetches, merges, or premature pushes. Pushing is delegated exclusively to [pull-request.md](./pull-request.md).
+
 ---
 
 ## 5. Pre-Commit Protocol & Checklist
@@ -149,6 +156,7 @@ Whenever preparing a commit, follow this exact sequence:
 Before executing `git commit`, the agent must complete this verification:
 
 - [ ] Current working tree inspected (`git status --short`, `git diff`).
+- [ ] No `git pull` or `git push` executed (remote operations are strictly forbidden during commit creation).
 - [ ] [changelog.md](../../../changelog.md) edited with the new entry matching the commit changes.
 - [ ] [changelog.md](../../../changelog.md) staged alongside the modified files (`git add changelog.md ...`).
 - [ ] Documentation and diagrams updated if code contracts, endpoints, or rules changed.

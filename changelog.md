@@ -24,6 +24,14 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-14 - [DOC] - Proibição explícita de git pull e git push no fluxo da skill git-commit
+
+Detalhes:
+
+- Adição de diretrizes e checklist proibindo explicitamente operações remotas (git pull e git push) durante o ciclo de commit na skill git-commit - Pedro Victor - 2026-10-14 - Sem card - 862e310
+
+---
+
 2026-10-14 - [BUILD] - Ajuste nas instruções do workflow de code review do Gemini
 
 Detalhes:
