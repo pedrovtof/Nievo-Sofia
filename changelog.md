@@ -24,6 +24,16 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-14 - [CHG] - Atualização do design system e paleta de cores para o estilo Cyber-Glassmorphic
+
+Detalhes:
+
+- Definição da estética Cyber-Glassmorphic, paleta de cores cósmica/neon e tokens visuais em DESIGN.md - Pedro Victor - 2026-10-14 - Sem card - f0ab69e
+- Inclusão dos protótipos de tela mobile (login) e novos assets de logotipo - Pedro Victor - 2026-10-14 - Sem card - f0ab69e
+- Remoção de protótipos legados e brief desatualizado em AI/Desing - Pedro Victor - 2026-10-14 - Sem card - f0ab69e
+
+---
+
 2026-10-14 - [DOC] - Proibição explícita de git pull e git push no fluxo da skill git-commit
 
 Detalhes:
