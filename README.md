@@ -28,7 +28,7 @@ Desenvolvido por um grupo de amigos e entusiastas de tecnologia, o Sofia tem com
 
 Board do time:
 
-* [Jira board](https://sophia-opensource.atlassian.net/jira/software/projects/SOP/summary)
+* [GitHub board](https://github.com/users/pedrovtof/projects/6/views/1)
 
 Boas práticas:
 
