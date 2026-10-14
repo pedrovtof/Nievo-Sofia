@@ -9,7 +9,7 @@ description: Standards, specifications, and protocols for pushing changes and fo
 
 This skill defines the protocol for pushing code branches to the remote repository and preparing Pull Requests (PRs).
 
-Every Pull Request must strictly conform to the repository template at [.github/pull_request_template.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/.github/pull_request_template.md) and fulfill all project quality gates prior to submission.
+Every Pull Request must strictly conform to the repository template at [.github/pull_request_template.md](../../../.github/pull_request_template.md) and fulfill all project quality gates prior to submission.
 
 ---
 
@@ -33,7 +33,7 @@ flowchart TD
 2. **Documentation & Diagrams**:
    - Verify that affected diagrams (Class, Sequence, DBML, Use Case, Decision Flow) were updated or created under `Documentation/config/docs/` as orchestrated by [documentation.md](../documentation/documentation.md).
 3. **Changelog Updated**:
-   - Verify [changelog.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/changelog.md) contains an entry matching its format:
+   - Verify [changelog.md](../../../changelog.md) contains an entry matching its format:
      `YY/MM/DD - [TYPE] - [GENERAL-DESCRIPTION]`
 4. **Clean Git Diff**:
    - Inspect `git status` to ensure no untracked temp files, build caches, or `.env` files are accidentally committed.
@@ -66,7 +66,7 @@ Example:
 `feat(auth): implement refresh token rotation mechanism (#14)`
 
 ### 4.2 PR Body Template
-Fill out all sections of [.github/pull_request_template.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/.github/pull_request_template.md):
+Fill out all sections of [.github/pull_request_template.md](../../../.github/pull_request_template.md):
 
 ```markdown
 ### Contain
@@ -107,7 +107,7 @@ Card : https://github.com/users/pedrovotf/projects/6/views/1
 
 ## 5. Automated Review Pipeline
 
-Once submitted, the PR triggers the automated review pipeline defined in [.github/workflows/gemini-pr-review.yml](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/.github/workflows/gemini-pr-review.yml). The automated reviewer inspects:
+Once submitted, the PR triggers the automated review pipeline defined in [.github/workflows/gemini-pr-review.yml](../../../.github/workflows/gemini-pr-review.yml). The automated reviewer inspects:
 - Adherence to SOLID principles and clean architecture.
 - Exception handling and resource lifecycle management.
 - SQL and database query performance.

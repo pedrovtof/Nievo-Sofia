@@ -7,7 +7,7 @@ description: Standards, specifications, and protocols for writing git commits us
 
 ## 1. Overview & Purpose
 
-This skill defines the mandatory standard for creating git commit messages in the project, adhering strictly to **Conventional Commits** and the **Karma Git Commit** convention as referenced in the project [README.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/README.md).
+This skill defines the mandatory standard for creating git commit messages in the project, adhering strictly to **Conventional Commits** and the **Karma Git Commit** convention as referenced in the project [README.md](../../../README.md).
 
 Every commit must be structured, meaningful, and written in natural language without AI-internal meta-comments.
 
@@ -97,10 +97,10 @@ branches in Documentation/config/docs/api/endpoints/checkout.md.
 
 ## 4. Mandatory Changelog Synchronization (`changelog.md`)
 
-Per [AI/Rules.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/AI/Rules.md), **every commit must include or be preceded by an update to [changelog.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/changelog.md)**. The agent must never perform a commit without editing the changelog.
+Per [AI/Rules.md](../../Rules.md), **every commit must include or be preceded by an update to [changelog.md](../../../changelog.md)**. The agent must never perform a commit without editing the changelog.
 
 ### 4.1 Changelog Entry Pattern
-Entries must be appended or inserted at the top of the `### Changelog` section in [changelog.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/changelog.md):
+Entries must be appended or inserted at the top of the `### Changelog` section in [changelog.md](../../../changelog.md):
 
 ```markdown
 YY/MM/DD - [TYPE] - [GENERAL-DESCRIPTION]
@@ -149,8 +149,8 @@ Whenever preparing a commit, follow this exact sequence:
 Before executing `git commit`, the agent must complete this verification:
 
 - [ ] Current working tree inspected (`git status --short`, `git diff`).
-- [ ] [changelog.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/changelog.md) edited with the new entry matching the commit changes.
-- [ ] [changelog.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/changelog.md) staged alongside the modified files (`git add changelog.md ...`).
+- [ ] [changelog.md](../../../changelog.md) edited with the new entry matching the commit changes.
+- [ ] [changelog.md](../../../changelog.md) staged alongside the modified files (`git add changelog.md ...`).
 - [ ] Documentation and diagrams updated if code contracts, endpoints, or rules changed.
 - [ ] Unit and integration tests pass cleanly.
 - [ ] Commit message conforms strictly to `<type>(<scope>): <subject>` syntax.

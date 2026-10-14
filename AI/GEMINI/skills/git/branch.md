@@ -7,7 +7,7 @@ description: Standards, specifications, and naming conventions for creating and 
 
 ## 1. Overview & Purpose
 
-This skill establishes the branch management policy and naming conventions for the project, aligned with the branching guidelines referenced in [README.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/README.md).
+This skill establishes the branch management policy and naming conventions for the project, aligned with the branching guidelines referenced in [README.md](../../../README.md).
 
 Maintaining consistent branch patterns prevents integration conflicts, keeps repository history legible, and ensures traceable deployments.
 

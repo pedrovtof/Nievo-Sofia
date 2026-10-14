@@ -47,12 +47,12 @@ Inspect the diff and map every changed element to its corresponding diagram doma
 
 | Changed Component Type | Target Skill | Target Diagram Type |
 | :--- | :--- | :--- |
-| Backend Classes, Interfaces, Entities, Services, Repositories | [class-diagram.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/AI/GEMINI/skills/documentation/mermaid/class-diagram.md) | Mermaid `classDiagram` |
-| REST Endpoints, HTTP Controllers, Route Handlers | [sequence-diagram.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/AI/GEMINI/skills/documentation/mermaid/sequence-diagram.md) | Mermaid `sequenceDiagram` |
-| Background Workers, Queue Consumers, Cron Jobs | [sequence-diagram.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/AI/GEMINI/skills/documentation/mermaid/sequence-diagram.md) | Mermaid `sequenceDiagram` |
-| Database Migrations, Models, Tables, Columns, Relations | [diagram.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/AI/GEMINI/skills/documentation/dbdiagram/diagram.md) | DBML / dbdiagram.io |
-| Use Cases, User Journeys, Actor Permissions | [use-case-diagram.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/AI/GEMINI/skills/documentation/mermaid/use-case-diagram.md) | Mermaid `flowchart LR` |
-| Business Logic Trees, Decision Gates, Policy Flowcharts | [decision-flow-diagram.md](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/AI/GEMINI/skills/documentation/mermaid/decision-flow-diagram.md) | Mermaid `flowchart TD` |
+| Backend Classes, Interfaces, Entities, Services, Repositories | [class-diagram.md](./mermaid/class-diagram.md) | Mermaid `classDiagram` |
+| REST Endpoints, HTTP Controllers, Route Handlers | [sequence-diagram.md](./mermaid/sequence-diagram.md) | Mermaid `sequenceDiagram` |
+| Background Workers, Queue Consumers, Cron Jobs | [sequence-diagram.md](./mermaid/sequence-diagram.md) | Mermaid `sequenceDiagram` |
+| Database Migrations, Models, Tables, Columns, Relations | [diagram.md](./dbdiagram/diagram.md) | DBML / dbdiagram.io |
+| Use Cases, User Journeys, Actor Permissions | [use-case-diagram.md](./mermaid/use-case-diagram.md) | Mermaid `flowchart LR` |
+| Business Logic Trees, Decision Gates, Policy Flowcharts | [decision-flow-diagram.md](./mermaid/decision-flow-diagram.md) | Mermaid `flowchart TD` |
 
 ### Step 3: Search for Existing References in `Documentation/config/docs/`
 Search `Documentation/config/docs/` using grep or file matching to find where the component is already documented:

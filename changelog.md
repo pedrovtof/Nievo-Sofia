@@ -24,14 +24,22 @@ YY/MM/DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+26/10/14 - [DOC] - Atualização de links absolutos para caminhos relativos nas skills de documentação e git
+
+Detalhes:
+
+- Substituição de referências file:// por caminhos relativos nos arquivos de skills para portabilidade do repositório - Pedro Victor - 26/10/14 - Sem card - [PENDING]
+
+---
+
 26/10/14 - [BUILD] - Configuração de diretrizes de IA, skills de agentes e padronização de documentação
 
 Detalhes:
 
-- Criação e padronização das skills de git, mermaid, dbdiagram e orquestrador de documentação - Pedro Victor - 26/10/14 - Sem card - [PENDING]
-- Configuração de regras globais em GEMINI.md, AI/Rules.md e AI/Default.md - Pedro Victor - 26/10/14 - Sem card - [PENDING]
-- Atualização do mkdocs.yml e inclusão da seção de regras de negócio - Pedro Victor - 26/10/14 - Sem card - [PENDING]
-- Adição do arquivo .gitignore para o repositório - Pedro Victor - 26/10/14 - Sem card - [PENDING]
+- Criação e padronização das skills de git, mermaid, dbdiagram e orquestrador de documentação - Pedro Victor - 26/10/14 - Sem card - 8f12ea7
+- Configuração de regras globais em GEMINI.md, AI/Rules.md e AI/Default.md - Pedro Victor - 26/10/14 - Sem card - 8f12ea7
+- Atualização do mkdocs.yml e inclusão da seção de regras de negócio - Pedro Victor - 26/10/14 - Sem card - 8f12ea7
+- Adição do arquivo .gitignore para o repositório - Pedro Victor - 26/10/14 - Sem card - 8f12ea7
 
 ---
 
