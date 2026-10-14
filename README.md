@@ -29,6 +29,7 @@ Desenvolvido por um grupo de amigos e entusiastas de tecnologia, o Sofia tem com
 Board do time:
 
 * [GitHub board](https://github.com/users/pedrovtof/projects/6/views/1)
+* [Jira board](https://nievo-sofia.atlassian.net/jira/software/projects/KAN/list?jql=project%20%3D%20KAN%20ORDER%20BY%20cf%5B10019%5D%20ASC)
 
 Boas práticas:
 
