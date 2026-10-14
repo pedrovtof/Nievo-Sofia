@@ -2,7 +2,7 @@
 
 - You must update the changelog.md with the changes using the patterns of the file
 - You must not use comments for yourself, the comments are for AI and humans, but they need to follow the humans aspect and natural languague.
-- You must update the Documentation with all the changes
+- You must update the Documentation with all the changes (use AI/GEMINI/skills/documentation/documentation.md as orchestrator)
 - You must update the README.md with the changes
 - You must do all the COMMITS with valid comments
 - You must use AI/Desing as base desing whenever you need to change something in Code/Front-end
@@ -11,6 +11,8 @@
 - You must create a mermaid MD diagram for each class you identified in backend code (use AI/GEMINI/skills/documentation/mermaid/class-diagram.md)
 - You must create a mermaid MD diagram for each endpoint/worker that you identified (use AI/GEMINI/skills/documentation/mermaid/sequence-diagram.md)
 - You must create a dbdiagram.io MD diagram for each changes in database that you identified (use AI/GEMINI/skills/documentation/dbdiagram/diagram.md)
+- You must create a mermaid MD diagram for each use case identified in business rules (use AI/GEMINI/skills/documentation/mermaid/use-case-diagram.md)
+- You must create a mermaid MD diagram for each complex decision flow or policy gate identified (use AI/GEMINI/skills/documentation/mermaid/decision-flow-diagram.md)
 - You aren't allowed to read .env files, you can read .env-examples files. 
 - If the user ask for some implementation, you must read the respective skills of the languague (AI/GEMINI/skills/programming)
 - If the user ask for some implementation in the database, you must read the respective skills of the languague (AI/GEMINI/skills/nosql AI/GEMINI/skills/sql)

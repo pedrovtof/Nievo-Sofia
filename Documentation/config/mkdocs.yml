@@ -2,6 +2,7 @@ site_name: Sofia Docs
 site_url: https://sofia.app.docs.com/docs
 nav:
   - Home: index.md
+  - Business Rules: business-rules/index.md
 
 theme:
   name: material
