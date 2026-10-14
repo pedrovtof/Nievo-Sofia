@@ -153,6 +153,7 @@ classDiagram
    - Avoid HTML markup inside labels (e.g., do not use `<br>`, `<b>`).
    - Quote labels containing special symbols or punctuation: `class_id["Class Label (Details)"]`.
 4. **Maintenance**: Whenever you alter a class signature, add a property, or modify an interface, immediately update the corresponding diagram.
+5. **SOLID Principles**: Ensure diagrams reflect good design practices like Single Responsibility Principle (SRP) and Dependency Inversion Principle (DIP), using interfaces for dependencies where appropriate.
 
 ## 6. Verification Checklist
 

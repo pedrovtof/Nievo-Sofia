@@ -168,6 +168,8 @@ sequenceDiagram
    - Ensure node labels do not contain raw HTML brackets or unescaped quotes.
    - Use aliases (`participant DB as Database`) to keep statements concise.
 4. **Maintenance**: Whenever route parameters, middlewares, or worker retry behaviors change, update the diagram in lockstep.
+5. **Dependency Management**: Use sequence diagrams to visualize interactions through abstractions (e.g., interfaces) to ensure proper dependency injection and loose coupling.
+6. **Logging and Monitoring**: Consider including participants or messages for logging and monitoring systems in critical error paths to ensure proper observability.
 
 ## 6. Verification Checklist
 

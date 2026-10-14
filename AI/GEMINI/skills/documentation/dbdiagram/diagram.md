@@ -241,6 +241,7 @@ TableGroup compliance {
 2. **Deterministic Naming**: Indexes and foreign keys must have explicit, predictable names (`idx_<table>_<column>`, `fk_<table>_<target>`).
 3. **Descriptive Comments**: Add `note:` on non-obvious business columns (e.g. status flags, JSON payload shapes, soft-delete fields).
 4. **No Sensitive Data**: Never put credentials, seeds with real passwords, or private encryption keys in diagram files.
+5. **Query Performance**: Regularly review index definitions and foreign key relationships to ensure optimal query performance for common access patterns.
 
 ## 6. Verification Checklist
 

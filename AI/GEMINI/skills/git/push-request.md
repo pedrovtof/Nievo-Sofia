@@ -34,7 +34,7 @@ flowchart TD
    - Verify that affected diagrams (Class, Sequence, DBML, Use Case, Decision Flow) were updated or created under `Documentation/config/docs/` as orchestrated by [documentation.md](../documentation/documentation.md).
 3. **Changelog Updated**:
    - Verify [changelog.md](../../../changelog.md) contains an entry matching its format:
-     `YY/MM/DD - [TYPE] - [GENERAL-DESCRIPTION]`
+     `YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]`
 4. **Clean Git Diff**:
    - Inspect `git status` to ensure no untracked temp files, build caches, or `.env` files are accidentally committed.
 

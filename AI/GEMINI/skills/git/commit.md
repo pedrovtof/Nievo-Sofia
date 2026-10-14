@@ -103,11 +103,11 @@ Per [AI/Rules.md](../../Rules.md), **every commit must include or be preceded by
 Entries must be appended or inserted at the top of the `### Changelog` section in [changelog.md](../../../changelog.md):
 
 ```markdown
-YY/MM/DD - [TYPE] - [GENERAL-DESCRIPTION]
+YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 Detalhes:
 
-- [DETAILED-DESCRIPTION] - [AUTHOR] - [DATE (YY/MM/DD)] - [CARD-OR-N/A] - [COMMIT-OR-PENDING]
+- [DETAILED-DESCRIPTION] - [AUTHOR] - [DATE (YYYY-MM-DD)] - [CARD-OR-N/A] - [COMMIT-OR-PENDING]
 ```
 
 ### 4.2 Type Mapping Matrix
@@ -130,7 +130,7 @@ Detalhes:
 Whenever preparing a commit, follow this exact sequence:
 
 1. **Step 1: Check Git Diff & Date**:
-   Determine the current date in `YY/MM/DD` format and verify files being committed.
+   Determine the current date in ISO 8601 `YYYY-MM-DD` format and verify files being committed.
 2. **Step 2: Edit `changelog.md`**:
    Insert the new entry under `### Changelog` following the template above.
 3. **Step 3: Stage `changelog.md` Together with Code**:
