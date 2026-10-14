@@ -24,6 +24,12 @@ YY/MM/DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+26/07/10 - [BUILD] - Criação dos arquivos base de AI e makefile
+
+Detalhes: 
+
+---
+
 26/03/22 - [DOC] - Criação do arquivos principais de logs
 
 Detalhes:
