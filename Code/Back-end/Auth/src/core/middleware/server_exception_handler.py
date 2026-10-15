@@ -32,9 +32,6 @@ class ServerExceptionHandler:
             HTTPStatus.INTERNAL_SERVER_ERROR,
             'error', 
             ['Internal Server Error']
-        ).to_json()
-
-        return JSONResponse(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            content=response,
         )
+
+        return await response.to_json()

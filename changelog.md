@@ -24,13 +24,23 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-15 - [NEW] - Estruturação do roteador de autenticação e endpoint inicial de signup
+
+Detalhes:
+
+- Criação do APIRouter modular com controller v1 e endpoint de signup - Pedro Victor - 2026-10-15 - #9 - pendente
+- Implementação do AuthService e modelo de validação SignupRequest - Pedro Victor - 2026-10-15 - #9 - pendente
+- Ajuste dos contratos de resposta para retorno assíncrono em JSONResponse e documentação de arquitetura - Pedro Victor - 2026-10-15 - #9 - pendente
+
+---
+
 2026-10-15 - [NEW] - Padronização de respostas da API, logger customizado e handler de exceções
 
 Detalhes:
 
-- Implementação dos contratos de resposta padrão (BaseApiResponse, BaseApiError, BaseApiSuccess) - Pedro Victor - 2026-10-15 - #9 - pendente
-- Implementação do CustomLogger e do ServerExceptionHandler para captura global de exceções HTTP 500 - Pedro Victor - 2026-10-15 - #9 - pendente
-- Atualização do gatilho do workflow do Gemini para pull_request - Pedro Victor - 2026-10-15 - #9 - pendente
+- Implementação dos contratos de resposta padrão (BaseApiResponse, BaseApiError, BaseApiSuccess) - Pedro Victor - 2026-10-15 - #9 - c36d519
+- Implementação do CustomLogger e do ServerExceptionHandler para captura global de exceções HTTP 500 - Pedro Victor - 2026-10-15 - #9 - c36d519
+- Atualização do gatilho do workflow do Gemini para pull_request - Pedro Victor - 2026-10-15 - #9 - c36d519
 
 ---
 

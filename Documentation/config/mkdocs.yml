@@ -2,7 +2,13 @@ site_name: Sofia Docs
 site_url: https://sofia.app.docs.com/docs
 nav:
   - Home: index.md
-  - Business Rules: business-rules/index.md
+  - Business Rules:
+      - Overview: business-rules/index.md
+      - Exception Handling: business-rules/exception-handling-decision-flow.md
+  - Backend:
+      - Auth Domain & Contracts: backend/domain/auth.md
+  - API:
+      - Health & Diagnostics: api/endpoints/health.md
 
 theme:
   name: material

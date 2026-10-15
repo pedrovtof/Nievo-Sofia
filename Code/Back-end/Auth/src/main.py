@@ -5,6 +5,7 @@ import os
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from api.router import api_router
 from core.logging import CustomLogger
 from core.middleware.server_exception_handler import ServerExceptionHandler
 
@@ -39,16 +40,10 @@ app.add_middleware(
 
 @app.exception_handler(HTTPStatus.INTERNAL_SERVER_ERROR)
 async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler for unhandled exceptions in the FastAPI application."""
     handler = ServerExceptionHandler(request, exc)
     return await handler.handle_exception()
 
 log.info(f"FastAPI application '{os.getenv('APP_NAME', 'FastAPI Application')}' is running in {os.getenv('ENVIRONMENT', 'development')} mode version {os.getenv('APP_VERSION', '1.0.0')}.")
 
-@app.get("/health")
-async def read_root():
-    return {"message": "alive"}
-
-@app.get("/exception")
-async def read_exception():
-    calculo = 1 / 0 
-    return {"resultado": calculo}
+app.include_router(api_router, prefix="/api")
