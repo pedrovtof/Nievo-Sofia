@@ -24,6 +24,15 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-15 - [NEW] - Estrutura inicial do microserviço de autenticação e configurações de desenvolvimento
+
+Detalhes:
+
+- Criação do esqueleto da aplicação FastAPI com endpoint de health check, configuração do Alembic e template de ambiente - Pedro Victor - 2026-10-15 - #9 - pendente
+- Inclusão das configurações de debug do VS Code e ajuste no .gitignore - Pedro Victor - 2026-10-15 - #9 - pendente
+
+---
+
 2026-10-14 - [BUILD] - Alteração do gatilho do workflow do Gemini para execução manual
 
 Detalhes:
