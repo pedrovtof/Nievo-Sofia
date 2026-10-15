@@ -1,0 +1,1 @@
+../../../AI/GEMINI/skills/documentation/mermaid/sequence-diagram.md

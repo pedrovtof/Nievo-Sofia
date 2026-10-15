@@ -1,0 +1,1 @@
+../../../AI/GEMINI/skills/documentation/dbdiagram/diagram.md
