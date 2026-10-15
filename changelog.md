@@ -24,6 +24,14 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-14 - [BUILD] - Alteração do gatilho do workflow do Gemini para execução manual
+
+Detalhes:
+
+- Mudança do evento de disparo de pull_request para workflow_dispatch no workflow gemini-pr-review.yml para execução manual sob demanda - Pedro Victor - 2026-10-14 - Sem card - pendente
+
+---
+
 2026-10-14 - [CHG] - Atualização do design system e paleta de cores para o estilo Cyber-Glassmorphic
 
 Detalhes:
