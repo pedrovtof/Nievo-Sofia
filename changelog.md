@@ -24,12 +24,22 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-15 - [NEW] - Padronização de respostas da API, logger customizado e handler de exceções
+
+Detalhes:
+
+- Implementação dos contratos de resposta padrão (BaseApiResponse, BaseApiError, BaseApiSuccess) - Pedro Victor - 2026-10-15 - #9 - pendente
+- Implementação do CustomLogger e do ServerExceptionHandler para captura global de exceções HTTP 500 - Pedro Victor - 2026-10-15 - #9 - pendente
+- Atualização do gatilho do workflow do Gemini para pull_request - Pedro Victor - 2026-10-15 - #9 - pendente
+
+---
+
 2026-10-15 - [NEW] - Estrutura inicial do microserviço de autenticação e configurações de desenvolvimento
 
 Detalhes:
 
-- Criação do esqueleto da aplicação FastAPI com endpoint de health check, configuração do Alembic e template de ambiente - Pedro Victor - 2026-10-15 - #9 - pendente
-- Inclusão das configurações de debug do VS Code e ajuste no .gitignore - Pedro Victor - 2026-10-15 - #9 - pendente
+- Criação do esqueleto da aplicação FastAPI com endpoint de health check, configuração do Alembic e template de ambiente - Pedro Victor - 2026-10-15 - #9 - 565782a
+- Inclusão das configurações de debug do VS Code e ajuste no .gitignore - Pedro Victor - 2026-10-15 - #9 - 565782a
 
 ---
 

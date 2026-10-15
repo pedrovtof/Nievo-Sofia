@@ -1,12 +1,16 @@
 """Setup FastAPI application with environment variables and CORS middleware."""
-
+from http import HTTPStatus
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from core.logging import CustomLogger
+from core.middleware.server_exception_handler import ServerExceptionHandler
 
 load_dotenv()
+
+log = CustomLogger(__name__)
 
 app = FastAPI(
     telemetry={"tracing": os.getenv("TELEMETRY_TRACING", False)},
@@ -33,9 +37,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-print(f"\n\nFastAPI application '{os.getenv('APP_NAME', 'FastAPI Application')}' is running in {os.getenv('ENVIRONMENT', 'development')} mode version {os.getenv('APP_VERSION', '1.0.0')}.\n\n")
+@app.exception_handler(HTTPStatus.INTERNAL_SERVER_ERROR)
+async def global_exception_handler(request: Request, exc: Exception):
+    handler = ServerExceptionHandler(request, exc)
+    return await handler.handle_exception()
+
+log.info(f"FastAPI application '{os.getenv('APP_NAME', 'FastAPI Application')}' is running in {os.getenv('ENVIRONMENT', 'development')} mode version {os.getenv('APP_VERSION', '1.0.0')}.")
 
 @app.get("/health")
 async def read_root():
     return {"message": "alive"}
 
+@app.get("/exception")
+async def read_exception():
+    calculo = 1 / 0 
+    return {"resultado": calculo}
