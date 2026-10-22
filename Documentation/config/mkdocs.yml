@@ -9,6 +9,7 @@ nav:
       - Auth Domain & Contracts: backend/domain/auth.md
   - API:
       - Health & Diagnostics: api/endpoints/health.md
+      - User Signup: api/endpoints/signup.md
 
 theme:
   name: material

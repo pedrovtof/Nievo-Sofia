@@ -2,7 +2,7 @@ from http import HTTPStatus
 from fastapi import Request
 
 from core.logging import CustomLogger
-from contracts.default.base_api_error import BaseApiError
+from schema.default.base_api_error import BaseApiError
 from fastapi.responses import JSONResponse
 
 
@@ -22,16 +22,17 @@ class ServerExceptionHandler:
         """
         log.error(f"Unhandled exception occurred: request={self.request} exception={self.exception}")
 
-        response =  BaseApiError(
-            "Ops! Something went wrong. Try again later.",
-            {
+        response = BaseApiError(                                                                                                                       
+            message="Ops! Something went wrong. Try again later.",                                                                                           
+            data={                                                                                                                                           
                 "details": self.exception.__str__(),
                 "method": self.request.method,
-                "url": str(self.request.url)
+                "url": str(self.request.url)                                                                                                                
             },
-            HTTPStatus.INTERNAL_SERVER_ERROR,
-            'error', 
-            ['Internal Server Error']
+            errors=["Internal Server Error"]
         )
 
-        return await response.to_json()
+        return JSONResponse(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, 
+            content=response.model_dump(mode="json")
+        )

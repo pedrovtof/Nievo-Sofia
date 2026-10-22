@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.v1 import auth_controller as v1_auth_controller
+from service.signup import controller as v1_auth_controller
 
 api_router = APIRouter()
 
