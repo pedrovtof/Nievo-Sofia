@@ -397,7 +397,6 @@ chrome-user-data
 *.sublime-workspace
 .idea
 *.iml
-.vscode
 .zed
 *.swp
 *.swo
@@ -688,7 +687,6 @@ project.lock.json
 .idea/
 
 # Visual Studio Code
-.vscode/
 
 # Output folder used by Webpack or other FE stuff
 **/node_modules/*

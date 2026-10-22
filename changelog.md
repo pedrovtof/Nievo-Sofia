@@ -24,6 +24,45 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-22 - [REFACTOR] - Migração de contratos de resposta para schemas Pydantic e modularização do serviço de signup
+
+Detalhes:
+
+- Substituição dos contratos genéricos em contracts/ por modelos Pydantic centralizados em schema/default/ - Pedro Victor - 2026-10-22 - #9 - pendente
+- Reorganização do fluxo de registro para pacote modular sob service/signup/ com controller e service dedicados - Pedro Victor - 2026-10-22 - #9 - pendente
+- Atualização de diagramas Mermaid (classes e sequência de signup) e documentação de endpoints no MkDocs - Pedro Victor - 2026-10-22 - #9 - pendente
+
+---
+
+2026-10-15 - [NEW] - Estruturação do roteador de autenticação e endpoint inicial de signup
+
+Detalhes:
+
+- Criação do APIRouter modular com controller v1 e endpoint de signup - Pedro Victor - 2026-10-15 - #9 - 1c955b7
+- Implementação do AuthService e modelo de validação SignupRequest - Pedro Victor - 2026-10-15 - #9 - 1c955b7
+- Ajuste dos contratos de resposta para retorno assíncrono em JSONResponse e documentação de arquitetura - Pedro Victor - 2026-10-15 - #9 - 1c955b7
+
+---
+
+2026-10-15 - [NEW] - Padronização de respostas da API, logger customizado e handler de exceções
+
+Detalhes:
+
+- Implementação dos contratos de resposta padrão (BaseApiResponse, BaseApiError, BaseApiSuccess) - Pedro Victor - 2026-10-15 - #9 - c36d519
+- Implementação do CustomLogger e do ServerExceptionHandler para captura global de exceções HTTP 500 - Pedro Victor - 2026-10-15 - #9 - c36d519
+- Atualização do gatilho do workflow do Gemini para pull_request - Pedro Victor - 2026-10-15 - #9 - c36d519
+
+---
+
+2026-10-15 - [NEW] - Estrutura inicial do microserviço de autenticação e configurações de desenvolvimento
+
+Detalhes:
+
+- Criação do esqueleto da aplicação FastAPI com endpoint de health check, configuração do Alembic e template de ambiente - Pedro Victor - 2026-10-15 - #9 - 565782a
+- Inclusão das configurações de debug do VS Code e ajuste no .gitignore - Pedro Victor - 2026-10-15 - #9 - 565782a
+
+---
+
 2026-10-14 - [BUILD] - Alteração do gatilho do workflow do Gemini para execução manual
 
 Detalhes:

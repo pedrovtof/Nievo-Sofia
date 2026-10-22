@@ -1,5 +1,5 @@
 name: Gemini PR Review
-on: [workflow_dispatch]
+on: [pull_request]
 
 jobs:
   review:
