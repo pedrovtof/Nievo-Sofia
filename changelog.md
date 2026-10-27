@@ -24,6 +24,17 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-27 - [NEW] - Estruturação do banco Postgres, migrações de contas e documentação DBML
+
+Detalhes:
+
+- Configuração de infraestrutura PostgreSQL em docker-compose, scripts de inicialização e alvos makefile - Pedro Victor - 2026-10-27 - #9 - pendente
+- Implementação das migrações Alembic para schemas signup e member com tabelas, índices e concessão de privilégios para platform_auth - Pedro Victor - 2026-10-27 - #9 - pendente
+- Refinamento de schemas de resposta com status booleano, injeção de dependência no controller e tratamento de debug no middleware - Pedro Victor - 2026-10-27 - #9 - pendente
+- Elaboração do diagrama de banco relacional em DBML e documentação detalhada de tabelas no MkDocs - Pedro Victor - 2026-10-27 - #9 - pendente
+
+---
+
 2026-10-22 - [REFACTOR] - Migração de contratos de resposta para schemas Pydantic e modularização do serviço de signup
 
 Detalhes:

@@ -703,3 +703,7 @@ AppPackages/
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
+
+# Database data directories and persistent volumes
+**/postgres/**/data/
+**/node_auth_a/data/

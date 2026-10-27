@@ -1,0 +1,136 @@
+Project accounts_service {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # Sofia Accounts & Auth Database Schema
+    Production relational database model for accounts, member profiles, devices, and signup terms.
+  '''
+}
+
+// ----------------------------------------------------
+// Schema: signup
+// ----------------------------------------------------
+
+Table signup.terms {
+  id serial [pk, increment]
+  name varchar(150) [not null, note: 'Name or title of the terms document']
+  tag varchar(50) [not null, note: 'Identifier tag for terms categorization']
+  content text [not null, note: 'Full text/markdown content of terms']
+  version int [not null, default: 1, note: 'Terms version number']
+  active boolean [not null, default: false, note: 'Whether this terms version is active']
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (tag, version) [unique, name: 'un_idx_signup_terms']
+  }
+
+  Note: 'Platform legal terms and conditions versions.'
+}
+
+Table signup.contry {
+  id serial [pk, increment]
+  tag varchar(10) [not null, note: 'ISO country code or identifier']
+  name varchar(150) [note: 'Country name']
+  active boolean [not null, default: true]
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    tag [unique, name: 'un_idx_signup_contry']
+  }
+
+  Note: 'Supported countries directory for onboarding.'
+}
+
+Table signup.user_agreements {
+  id serial [pk, increment]
+  user_id uuid [not null, note: 'Foreign key to member.user']
+  term_id int [not null, note: 'Foreign key to signup.terms']
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (user_id, term_id) [unique, name: 'un_idx_signup_user_agreements']
+  }
+
+  Note: 'Audit log of user acceptance for specific terms versions.'
+}
+
+// ----------------------------------------------------
+// Schema: member
+// ----------------------------------------------------
+
+Table member.user {
+  id uuid [pk, note: 'Unique user identifier']
+  full_name varchar(150) [note: 'Legal full name of user']
+  nick_name varchar(150) [note: 'Public display nickname']
+  email varchar(50) [note: 'User email address']
+  phone varchar(50) [note: 'Contact phone number']
+  active boolean [not null, default: true, note: 'Active account status flag']
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    email [unique, name: 'un_idx_members_email']
+    phone [unique, name: 'un_idx_members_phone']
+  }
+
+  Note: 'Core member identity table in accounts database.'
+}
+
+Table member.user_details {
+  id uuid [pk, note: 'Primary key for user detail record']
+  user_id uuid [not null, note: 'Foreign key to member.user']
+  born_date date [not null, note: 'Date of birth']
+  country_id int [note: 'Foreign key to signup.contry']
+  validated_email boolean [not null, default: false]
+  validated_phone boolean [not null, default: false]
+  address varchar(50) [note: 'User street address']
+  document varchar(50) [not null, note: 'Official document / tax ID']
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    user_id [unique, name: 'un_idx_members_detail_user_id']
+    document [unique, name: 'un_idx_members_detail_user_document']
+  }
+
+  Note: 'Extended user personal details and verification state.'
+}
+
+Table member.device {
+  id uuid [pk, note: 'Primary key for device record']
+  user_id uuid [not null, note: 'Foreign key to member.user']
+  x_device_id varchar(50) [not null, note: 'Unique device hardware/fingerprint identifier']
+  ip_list "varchar[]" [note: 'Array of known IP addresses']
+  active boolean [not null, default: true]
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Registered client devices and associated IP histories.'
+}
+
+// ----------------------------------------------------
+// Relationships
+// ----------------------------------------------------
+
+Ref fk_user_agreements_term: signup.user_agreements.term_id > signup.terms.id
+Ref fk_user_agreements_user: signup.user_agreements.user_id > member.user.id
+Ref fk_member_user_details: member.user_details.user_id - member.user.id
+Ref fk_member_user_details_contry: member.user_details.country_id > signup.contry.id
+Ref fk_member_user_device: member.device.user_id > member.user.id
+
+// ----------------------------------------------------
+// Domain Groups
+// ----------------------------------------------------
+
+TableGroup signup_domain {
+  signup.terms
+  signup.contry
+  signup.user_agreements
+}
+
+TableGroup member_domain {
+  member.user
+  member.user_details
+  member.device
+}

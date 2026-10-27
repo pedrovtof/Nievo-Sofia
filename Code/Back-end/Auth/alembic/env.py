@@ -5,6 +5,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -37,7 +41,10 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = os.getenv("PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING")
+    if not url:
+        raise Exception("You must pass a env to the migrations PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING")
+
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -56,6 +63,13 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+
+    url = os.getenv("PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING")
+    if not url:
+        raise Exception("You must pass a env to the migrations PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING")
+
+    config.set_main_option("sqlalchemy.url", url)
+    
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",

@@ -10,4 +10,4 @@ class BaseApiResponse(BaseModel):
     """
     message: Optional[str] = None                                                                                                                    
     data: Optional[dict[str, Any]] = None                                                                                                  
-    status: Optional[str] = None    
+    status: Optional[str] = None

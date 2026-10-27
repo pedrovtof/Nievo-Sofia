@@ -14,7 +14,7 @@ class SignupService:
         """
             Registers a new user with the SignupRequest.
         """
-
+        
         response = BaseApiSuccess(
             message="User registered successfully.",
             status="success"

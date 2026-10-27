@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from fastapi import Request
+import os
 
 from core.logging import CustomLogger
 from schema.default.base_api_error import BaseApiError
@@ -22,10 +23,14 @@ class ServerExceptionHandler:
         """
         log.error(f"Unhandled exception occurred: request={self.request} exception={self.exception}")
 
+        error_details = {}
+        if os.getenv("DEBUG", "False").lower() == "true":
+            error_details["details"] = self.exception.__str__()
+
         response = BaseApiError(                                                                                                                       
             message="Ops! Something went wrong. Try again later.",                                                                                           
             data={                                                                                                                                           
-                "details": self.exception.__str__(),
+                "details": error_details,
                 "method": self.request.method,
                 "url": str(self.request.url)                                                                                                                
             },

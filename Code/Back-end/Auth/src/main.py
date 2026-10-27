@@ -14,8 +14,8 @@ load_dotenv()
 log = CustomLogger(__name__)
 
 app = FastAPI(
-    telemetry={"tracing": os.getenv("TELEMETRY_TRACING", False)},
-    debug=os.getenv("DEBUG", False),
+    telemetry={"tracing": os.getenv("TELEMETRY_TRACING", "False").lower() == "true"},   
+    debug=os.getenv("DEBUG", "False").lower() == "true",
     title=os.getenv("APP_NAME", "FastAPI Application"),
     description=os.getenv("APP_DESCRIPTION", "This is a FastAPI application."),
     version=os.getenv("APP_VERSION", "1.0.0"),

@@ -1,4 +1,4 @@
-# User Signup Endpoint (`POST /v1/auth/`)
+# User Signup Endpoint (`POST /v1/signup/`)
 
 ## 1. Overview
 The **User Signup Endpoint** provides initial onboarding and account registration for users within the Sofia platform. It receives client registration payloads, validates email formatting, password length boundaries, and terms acceptance before delegating processing to the signup domain service.
@@ -20,7 +20,7 @@ sequenceDiagram
         participant Handler as ServerExceptionHandler
     end
 
-    Client ->>+ App: POST /v1/auth/ (SignupRequest)
+    Client ->>+ App: POST /v1/signup/ (SignupRequest)
     App ->> App: Validate SignupRequest via Pydantic
     alt Invalid Request Payload
         App -->> Client: 422 Unprocessable Entity (Validation Errors)
@@ -47,7 +47,7 @@ sequenceDiagram
 
 ### 3.1 HTTP Request
 - **Method**: `POST`
-- **Path**: `/v1/auth/`
+- **Path**: `/v1/signup/`
 - **Headers**: `Content-Type: application/json`
 
 #### Request Body (`SignupRequest`)
@@ -92,14 +92,14 @@ sequenceDiagram
 #### Internal Server Error (`500 Internal Server Error`)
 ```json
 {
-  "status": "error",
+  "status": "false",
   "message": "Ops! Something went wrong. Try again later.",
   "data": {
-    "details": "<exception details>",
+    "details": {},
     "method": "POST",
-    "url": "http://localhost:8000/v1/auth/"
+    "url": "http://localhost:8000/v1/signup/"
   },
-  "errors": ["Internal Server Error"]
+  "errors": []
 }
 ```
 

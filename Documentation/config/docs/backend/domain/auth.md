@@ -78,16 +78,16 @@ classDiagram
 All microservice endpoints adhere to a standardized JSON response envelope backed by Pydantic models:
 
 - **[`BaseApiResponse`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_response.py)**:
-  - `status`: String indicator (`success` or `error`).
+  - `status`: String indicator (`"true"` or `"false"`).
   - `message`: User-friendly human-readable message.
   - `data`: Arbitrary dictionary payload containing response details.
   - Serialized via Pydantic `model_dump(mode="json")`.
 
 - **[`BaseApiSuccess`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_sucess.py)**:
-  - Extends `BaseApiResponse` with default values: `status="success"`, `message="executed with success"`.
+  - Extends `BaseApiResponse` with default values: `status="true"`, `message="executed with success"`.
 
 - **[`BaseApiError`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_error.py)**:
-  - Extends `BaseApiResponse` with default values: `status="error"`, `message="An error occurred"`.
+  - Extends `BaseApiResponse` with default values: `status="false"`, `message="An error occurred"`.
   - Additional field `errors`: List of validation or domain error strings.
 
 ### 3.2 Signup Domain Service & Validation
@@ -107,7 +107,7 @@ All microservice endpoints adhere to a standardized JSON response envelope backe
 - **[`ServerExceptionHandler`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/middleware/server_exception_handler.py)**:
   - Intercepts unexpected runtime exceptions during HTTP request lifecycle.
   - Records error logs using `CustomLogger.error(...)` including request method and URL.
-  - Generates a structured HTTP 500 JSON response utilizing `BaseApiError`.
+  - Generates a structured HTTP 500 JSON response utilizing `BaseApiError`. Exception details are sanitized and only included in payload when `DEBUG="True"`.
 
 ---
 

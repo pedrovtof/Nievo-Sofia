@@ -10,6 +10,8 @@ nav:
   - API:
       - Health & Diagnostics: api/endpoints/health.md
       - User Signup: api/endpoints/signup.md
+  - Database:
+      - Schema & Tables: database/tables.md
 
 theme:
   name: material

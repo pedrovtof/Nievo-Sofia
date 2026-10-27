@@ -45,7 +45,8 @@ flowchart TD
    - Policy: Unhandled errors are routed to `ServerExceptionHandler`, preventing standard Python tracebacks from leaking.
 
 3. **Gate: Structured Serialization**:
-   - Sanitization: Exception string details are encapsulated in `BaseApiError["data"]["details"]`.
+   - Sanitization: Exception string details are encapsulated in `BaseApiError["data"]["details"]` only when `DEBUG` is enabled (`"True"`), preventing internal stack details from leaking in production.
+   - Status Flag: Set to `"false"` indicating unsuccessful execution.
    - Logging: Audit log entry is written with `CustomLogger` at `ERROR` level.
    - Status Code: Explicitly returned with HTTP status code 500 (`INTERNAL_SERVER_ERROR`).
 

@@ -1,10 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from service.signup.service import SignupService
 from schema.default.base_api_response import BaseApiResponse
 from service.signup.request import SignupRequest
 
 router = APIRouter()
-signup_service = SignupService()
 
 @router.post(
         path="/", 
@@ -13,5 +12,8 @@ signup_service = SignupService()
         response_description="Retorna uma mensagem de sucesso e os dados do usuário registrado.",
         response_model=BaseApiResponse
     )
-async def signup(request: SignupRequest):
+async def signup(
+        request: SignupRequest,
+        signup_service: SignupService = Depends(SignupService)
+    ):
     return await signup_service.signup(request)
