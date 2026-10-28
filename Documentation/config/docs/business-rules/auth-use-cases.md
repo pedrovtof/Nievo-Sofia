@@ -17,12 +17,10 @@ flowchart LR
     subgraph AuthSystem ["System: Sofia Auth Microservice"]
         uc_signup(["Register User Account"])
         uc_accept_terms(["Confirm Terms of Service"])
-        uc_check_email(["Verify Email Availability"])
         uc_health(["Monitor Service Liveness"])
 
         %% Include relationships
         uc_signup -.->|"<<include>>"| uc_accept_terms
-        uc_signup -.->|"<<include>>"| uc_check_email
     end
 
     %% Actor Associations
@@ -41,7 +39,6 @@ flowchart LR
 ### 3.2 Core Use Cases
 - **Register User Account (`POST /api/v1/signup/user`)**: Allows a guest user to initiate account registration with a valid email, bounded password, and explicit terms confirmation.
 - **Confirm Terms of Service**: Mandatory included step ensuring legal consent (`accept_terms`) accompanies registration requests.
-- **Verify Email Availability**: Included verification querying `member.user` via `UserRepository` to inspect whether an account with the provided email already exists.
 - **Monitor Service Liveness**: Diagnostic health probe confirming service operational status.
 
 ---

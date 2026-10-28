@@ -148,7 +148,7 @@ All microservice endpoints adhere to a standardized JSON response envelope backe
   - Requires explicit boolean confirmation for `accept_terms`.
 - **[`SignupService`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/service.py)**:
   - Receives an injected `UserRepository` dependency via FastAPI `Depends`.
-  - Executes `signup_user(request)`, querying existing accounts by email and returning an HTTP 202 Accepted envelope.
+  - Executes `signup_user(request)` and returns an HTTP 202 Accepted envelope.
 
 ### 3.4 Core Logging Subsystem
 - **[`CustomLogger`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/logging.py)**:

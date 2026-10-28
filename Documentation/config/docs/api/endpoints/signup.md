@@ -7,7 +7,7 @@ The **User Signup Endpoint** provides initial onboarding and account registratio
 
 ## 2. Architecture & Sequence Diagram
 
-The following Mermaid sequence diagram details the complete request lifecycle, including Pydantic input validation, dependency-injected database session resolution, repository email lookup, service processing, and error interception:
+The following Mermaid sequence diagram details the complete request lifecycle, including Pydantic input validation, dependency-injected database session and repository resolution, service processing, and error interception:
 
 ```mermaid
 sequenceDiagram
@@ -22,7 +22,6 @@ sequenceDiagram
     box Infrastructure Layer
         participant SessionMgr as SessionManager
         participant Repo as UserRepository
-        participant DB as PostgreSQL (accounts)
     end
 
     Client ->>+ App: POST /api/v1/signup/user (SignupUserRequest)
@@ -32,12 +31,10 @@ sequenceDiagram
     else Valid Payload
         App ->>+ SessionMgr: get_db()
         SessionMgr -->>- App: Yield SQLAlchemy Session
+        App ->>+ Repo: Instantiate UserRepository(db_session)
+        Repo -->>- App: UserRepository instance
         App ->>+ Controller: signup(request, signup_service)
         Controller ->>+ Service: signup_user(request)
-        Service ->>+ Repo: get_by_mail(request.email)
-        Repo ->>+ DB: SELECT FROM member.user WHERE email = ?
-        DB -->>- Repo: User record or None
-        Repo -->>- Service: Optional[User]
         alt Unhandled Exception
             Service -->> Handler: Exception raised
             Handler ->> Handler: Log error & construct BaseApiError

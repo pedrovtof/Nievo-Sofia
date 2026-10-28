@@ -24,14 +24,24 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-28 - [FIX] - Ajustes na entidade User, indentação do repositório e sincronização de diagramas
+
+Detalhes:
+
+- Ajuste do tamanho da coluna email para String(150) na entidade ORM User - Pedro Victor - 2026-10-28 - #9 - 01afc6c
+- Correção de indentação no método get_by_mail do UserRepository - Pedro Victor - 2026-10-28 - #9 - 83f497e
+- Remoção de variável temporária de teste em SignupService.signup_user e sincronização da documentação - Pedro Victor - 2026-10-28 - #9 - c4576be
+
+---
+
 2026-10-28 - [NEW] - Implementação do SessionManager SQLAlchemy, entidade User, repositório e ajustes de migração
 
 Detalhes:
 
-- Implementação do SessionManager com gerenciamento de ciclo de vida lifespan no FastAPI e pool de conexões - Pedro Victor - 2026-10-28 - #9 - pendente
-- Criação da base declarativa ORM, entidade User (member.user) e UserRepository com injeção de dependência - Pedro Victor - 2026-10-28 - #9 - pendente
-- Atualização do endpoint de registro para POST /api/v1/signup/user com SignupUserRequest e integração ao UserRepository - Pedro Victor - 2026-10-28 - #9 - pendente
-- Correção da tabela signup.country, ampliação de member.user.email nas migrações Alembic e sincronização da documentação e diagramas - Pedro Victor - 2026-10-28 - #9 - pendente
+- Implementação do SessionManager com gerenciamento de ciclo de vida lifespan no FastAPI e pool de conexões - Pedro Victor - 2026-10-28 - #9 - fef7a7e
+- Criação da base declarativa ORM, entidade User (member.user) e UserRepository com injeção de dependência - Pedro Victor - 2026-10-28 - #9 - fef7a7e
+- Atualização do endpoint de registro para POST /api/v1/signup/user com SignupUserRequest e integração ao UserRepository - Pedro Victor - 2026-10-28 - #9 - fef7a7e
+- Correção da tabela signup.country, ampliação de member.user.email nas migrações Alembic e sincronização da documentação e diagramas - Pedro Victor - 2026-10-28 - #9 - fef7a7e
 
 ---
 
