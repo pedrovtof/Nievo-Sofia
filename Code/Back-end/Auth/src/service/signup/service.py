@@ -22,9 +22,6 @@ class SignupService:
             status="success",
         )
 
-        teste = await self._user_repository.get_by_mail(request.email)
-        print(teste)
-
         return JSONResponse(
             status_code=HTTPStatus.ACCEPTED,
             content=response.model_dump(mode="json"),
