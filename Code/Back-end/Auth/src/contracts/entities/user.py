@@ -30,7 +30,7 @@ class User(Base):
         default=None,
     )
     email: Mapped[Optional[str]] = mapped_column(
-        String(50),
+        String(150),
         unique=True,
         nullable=True,
         default=None,
