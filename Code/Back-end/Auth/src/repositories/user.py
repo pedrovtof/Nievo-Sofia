@@ -22,9 +22,9 @@ class UserRepository:
         return self.db.scalars(statement).first()
 
     async def get_by_mail(self, user_email: str) -> Optional[User]:
-            """Retrieve a user record by its unique UUID identifier."""
-            statement = select(User).where(User.email == user_email)
-            return self.db.scalars(statement).first()
+        """Retrieve a user record by its unique UUID identifier."""
+        statement = select(User).where(User.email == user_email)
+        return self.db.scalars(statement).first()
 
     def create(self, user: User) -> User:
         """Persist a new User entity in the database and return the refreshed record."""
