@@ -15,6 +15,7 @@ LICENSE_NAME=Apache 2.0
 LICENSE_URL=<http://www.apache.org/licenses/LICENSE-2.0.html>
 CORS_ALLOW_ORIGINS=<http://localhost,http://localhost:8080>,*
 
-## Migration
+## Database & Migration
 
-PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING="postgresql://app_migration_service_auth:senhasegUr@127.0.0.1:5432/signup"
+PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING="postgresql://app_migration_accounts:senhasegUr@127.0.0.1:5432/accounts"
+PGSQL_DATABASE_PLATFORM_AUTH_ACCOUNTS_CONNECTION_STRING="postgresql://platform_auth:senhasegUr@127.0.0.1:5432/accounts"

@@ -22,7 +22,7 @@ def upgrade():
             id uuid primary key,
             full_name VARCHAR(150) default null,
             nick_name VARCHAR(150) default null,
-            email varchar(50) default null,
+            email varchar(150) default null,
             phone varchar(50) default null,
             active bool default true not null,
             created_at TIMESTAMP default CURRENT_TIMESTAMP not null,

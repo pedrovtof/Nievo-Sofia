@@ -1,26 +1,31 @@
+"""Application service handling user registration workflows."""
 from http import HTTPStatus
-from fastapi.responses import JSONResponse
 
-from schema.default.base_api_response import BaseApiResponse
+from fastapi import Depends
+from fastapi.responses import JSONResponse
+from repositories.user import UserRepository
 from schema.default.base_api_sucess import BaseApiSuccess
-from service.signup.request import SignupRequest
+from service.signup.request import SignupUserRequest
+
 
 class SignupService:
-    """
-        SignupService class provides authentication-related services, such as user registration.
-    """
+    """Provides authentication-related onboarding services such as user registration."""
 
-    async def signup(self, request: SignupRequest) -> BaseApiResponse:
-        """
-            Registers a new user with the SignupRequest.
-        """
-        
+    def __init__(self, user_repository: UserRepository = Depends(UserRepository)) -> None:
+        """Initialize SignupService with an injected UserRepository instance."""
+        self._user_repository = user_repository
+
+    async def signup_user(self, request: SignupUserRequest) -> JSONResponse:
+        """Process a user signup request and return an accepted API response envelope."""
         response = BaseApiSuccess(
             message="User registered successfully.",
-            status="success"
+            status="success",
         )
 
+        teste = await self._user_repository.get_by_mail(request.email)
+        print(teste)
+
         return JSONResponse(
-            status_code=HTTPStatus.ACCEPTED, 
-            content=response.model_dump(mode="json")
+            status_code=HTTPStatus.ACCEPTED,
+            content=response.model_dump(mode="json"),
         )

@@ -4,6 +4,7 @@ nav:
   - Home: index.md
   - Business Rules:
       - Overview: business-rules/index.md
+      - Auth & Onboarding Use Cases: business-rules/auth-use-cases.md
       - Exception Handling: business-rules/exception-handling-decision-flow.md
   - Backend:
       - Auth Domain & Contracts: backend/domain/auth.md

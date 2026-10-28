@@ -36,7 +36,7 @@ def upgrade():
             created_at TIMESTAMP default CURRENT_TIMESTAMP not null
         );
 
-        CREATE TABLE IF NOT EXISTS signup.contry (
+        CREATE TABLE IF NOT EXISTS signup.country (
             id serial primary key,
             tag varchar(10) not null,
             name varchar(150) default null,
@@ -51,7 +51,7 @@ def upgrade():
 def downgrade():
     op.execute("""
         DROP TABLE IF EXISTS signup.terms;
-        DROP TABLE IF EXISTS signup.contry;
+        DROP TABLE IF EXISTS signup.country;
         DROP TABLE IF EXISTS signup.user_agreements;
     """)
     pass

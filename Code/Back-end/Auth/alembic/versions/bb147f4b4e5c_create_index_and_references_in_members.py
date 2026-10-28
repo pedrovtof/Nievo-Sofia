@@ -31,7 +31,7 @@ def upgrade():
 
             IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_member_user_details_contry') THEN
                 ALTER TABLE member.user_details
-                ADD CONSTRAINT fk_member_user_details_contry FOREIGN KEY (country_id) REFERENCES signup.contry(id);
+                ADD CONSTRAINT fk_member_user_details_contry FOREIGN KEY (country_id) REFERENCES signup.country(id);
             END IF;
         END $$;
 

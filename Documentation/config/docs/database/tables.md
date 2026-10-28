@@ -41,7 +41,7 @@ Table signup.terms {
   Note: 'Platform legal terms and conditions versions.'
 }
 
-Table signup.contry {
+Table signup.country {
   id serial [pk, increment]
   tag varchar(10) [not null, note: 'ISO country code or identifier']
   name varchar(150) [note: 'Country name']
@@ -50,7 +50,7 @@ Table signup.contry {
   updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
 
   indexes {
-    tag [unique, name: 'un_idx_signup_contry']
+    tag [unique, name: 'un_idx_signup_country']
   }
 
   Note: 'Supported countries directory for onboarding.'
@@ -77,7 +77,7 @@ Table member.user {
   id uuid [pk, note: 'Unique user identifier']
   full_name varchar(150) [note: 'Legal full name of user']
   nick_name varchar(150) [note: 'Public display nickname']
-  email varchar(50) [note: 'User email address']
+  email varchar(150) [note: 'User email address']
   phone varchar(50) [note: 'Contact phone number']
   active boolean [not null, default: true, note: 'Active account status flag']
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
@@ -95,7 +95,7 @@ Table member.user_details {
   id uuid [pk, note: 'Primary key for user detail record']
   user_id uuid [not null, note: 'Foreign key to member.user']
   born_date date [not null, note: 'Date of birth']
-  country_id int [note: 'Foreign key to signup.contry']
+  country_id int [note: 'Foreign key to signup.country']
   validated_email boolean [not null, default: false]
   validated_phone boolean [not null, default: false]
   address varchar(50) [note: 'User street address']
@@ -127,13 +127,13 @@ Table member.device {
 Ref fk_user_agreements_term: signup.user_agreements.term_id > signup.terms.id
 Ref fk_user_agreements_user: signup.user_agreements.user_id > member.user.id
 Ref fk_member_user_details: member.user_details.user_id - member.user.id
-Ref fk_member_user_details_contry: member.user_details.country_id > signup.contry.id
+Ref fk_member_user_details_contry: member.user_details.country_id > signup.country.id
 Ref fk_member_user_device: member.device.user_id > member.user.id
 
 // Domain Groups
 TableGroup signup_domain {
   signup.terms
-  signup.contry
+  signup.country
   signup.user_agreements
 }
 
@@ -150,11 +150,11 @@ TableGroup member_domain {
 
 ### 3.1 Schema `signup`
 - **`signup.terms`**: Legal agreements and terms of use. Indexed uniquely by `(tag, version)`.
-- **`signup.contry`**: List of eligible nations with unique country code `tag`.
+- **`signup.country`**: List of eligible nations with unique country code `tag`.
 - **`signup.user_agreements`**: Junction table auditing when each user agreed to specific terms versions. Indexed uniquely by `(user_id, term_id)`.
 
 ### 3.2 Schema `member`
-- **`member.user`**: Core account entity. Enforces unique indexes on `email` and `phone`.
+- **`member.user`**: Core account entity mapped by the SQLAlchemy `User` ORM model. Enforces unique indexes on `email` (`varchar(150)`) and `phone` (`varchar(50)`).
 - **`member.user_details`**: 1-to-1 extension containing demographic and verification attributes (unique on `user_id` and `document`).
 - **`member.device`**: Device audit and multi-factor tracking records linked to users via `user_id`.
 

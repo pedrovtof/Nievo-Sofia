@@ -1,13 +1,13 @@
-# User Signup Endpoint (`POST /v1/signup/`)
+# User Signup Endpoint (`POST /api/v1/signup/user`)
 
 ## 1. Overview
-The **User Signup Endpoint** provides initial onboarding and account registration for users within the Sofia platform. It receives client registration payloads, validates email formatting, password length boundaries, and terms acceptance before delegating processing to the signup domain service.
+The **User Signup Endpoint** provides initial onboarding and account registration for users within the Sofia platform. It receives client registration payloads (`SignupUserRequest`), validates email formatting, password length boundaries, and terms acceptance, injects a managed SQLAlchemy database session via `SessionManager`, and delegates processing to `SignupService` and `UserRepository`.
 
 ---
 
 ## 2. Architecture & Sequence Diagram
 
-The following Mermaid sequence diagram details the complete request lifecycle, including Pydantic input validation, service processing, and error interception:
+The following Mermaid sequence diagram details the complete request lifecycle, including Pydantic input validation, dependency-injected database session resolution, repository email lookup, service processing, and error interception:
 
 ```mermaid
 sequenceDiagram
@@ -19,26 +19,42 @@ sequenceDiagram
         participant Service as SignupService
         participant Handler as ServerExceptionHandler
     end
+    box Infrastructure Layer
+        participant SessionMgr as SessionManager
+        participant Repo as UserRepository
+        participant DB as PostgreSQL (accounts)
+    end
 
-    Client ->>+ App: POST /v1/signup/ (SignupRequest)
-    App ->> App: Validate SignupRequest via Pydantic
+    Client ->>+ App: POST /api/v1/signup/user (SignupUserRequest)
+    App ->> App: Validate SignupUserRequest via Pydantic
     alt Invalid Request Payload
         App -->> Client: 422 Unprocessable Entity (Validation Errors)
     else Valid Payload
-        App ->>+ Controller: signup(request)
-        Controller ->>+ Service: signup(request)
+        App ->>+ SessionMgr: get_db()
+        SessionMgr -->>- App: Yield SQLAlchemy Session
+        App ->>+ Controller: signup(request, signup_service)
+        Controller ->>+ Service: signup_user(request)
+        Service ->>+ Repo: get_by_mail(request.email)
+        Repo ->>+ DB: SELECT FROM member.user WHERE email = ?
+        DB -->>- Repo: User record or None
+        Repo -->>- Service: Optional[User]
         alt Unhandled Exception
             Service -->> Handler: Exception raised
             Handler ->> Handler: Log error & construct BaseApiError
-            Handler -->>- App: 500 Internal Server Error JSONResponse
+            Handler -->> App: 500 Internal Server Error JSONResponse
+            App ->> SessionMgr: Rollback & close DB session
             App -->> Client: 500 Internal Server Error
         else Success Flow
             Service ->> Service: Construct BaseApiSuccess envelope
-            Service -->>- Controller: 202 Accepted JSONResponse
-            Controller -->>- App: JSONResponse
-            App -->>- Client: 202 Accepted {"status": "success", "message": "User registered successfully.", "data": null}
+            Service -->> Controller: 202 Accepted JSONResponse
+            Controller -->> App: JSONResponse
+            App ->> SessionMgr: Close DB session
+            App -->> Client: 202 Accepted {"status": "success", "message": "User registered successfully.", "data": null}
         end
+        deactivate Service
+        deactivate Controller
     end
+    deactivate App
 ```
 
 ---
@@ -47,10 +63,10 @@ sequenceDiagram
 
 ### 3.1 HTTP Request
 - **Method**: `POST`
-- **Path**: `/v1/signup/`
+- **Path**: `/api/v1/signup/user`
 - **Headers**: `Content-Type: application/json`
 
-#### Request Body (`SignupRequest`)
+#### Request Body (`SignupUserRequest`)
 | Field | Type | Required | Description |
 | :--- | :--- | :---: | :--- |
 | `email` | `EmailStr` | Yes | Valid email address according to RFC standards. |
@@ -97,7 +113,7 @@ sequenceDiagram
   "data": {
     "details": {},
     "method": "POST",
-    "url": "http://localhost:8000/v1/signup/"
+    "url": "http://localhost:8000/api/v1/signup/user"
   },
   "errors": []
 }
@@ -106,10 +122,14 @@ sequenceDiagram
 ---
 
 ## 4. Related Implementation Files
+- [`main.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/main.py)
 - [`router.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/api/router.py)
 - [`controller.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/controller.py)
 - [`service.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/service.py)
 - [`request.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/request.py)
+- [`session_manager.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/database/session_manager.py)
+- [`user.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user.py)
+- [`user.py` (Entity)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/user.py)
 - [`base_api_sucess.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_sucess.py)
 - [`base_api_error.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_error.py)
 - [`server_exception_handler.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/middleware/server_exception_handler.py)

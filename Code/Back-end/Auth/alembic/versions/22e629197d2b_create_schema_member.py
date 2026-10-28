@@ -25,6 +25,6 @@ def upgrade():
 
 def downgrade():
     op.execute("""
-        DROP SCHEMA IF EXISTS member;
+        DROP SCHEMA IF EXISTS member CASCADE;
     """)
     pass

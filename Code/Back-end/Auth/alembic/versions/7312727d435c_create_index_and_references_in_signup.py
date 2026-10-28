@@ -35,7 +35,7 @@ def upgrade():
 
         CREATE UNIQUE INDEX IF NOT EXISTS un_idx_signup_terms ON signup.terms (tag,version);
 
-        CREATE UNIQUE INDEX IF NOT EXISTS un_idx_signup_contry ON signup.contry (tag);
+        CREATE UNIQUE INDEX IF NOT EXISTS un_idx_signup_country ON signup.country (tag);
     """)
     pass
 
@@ -61,6 +61,6 @@ def downgrade():
 
         DROP INDEX IF EXISTS signup.un_idx_signup_terms;
 
-        DROP INDEX IF EXISTS signup.un_idx_signup_contry;
+        DROP INDEX IF EXISTS signup.un_idx_signup_country;
     """)
     pass

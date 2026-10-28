@@ -24,14 +24,25 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-28 - [NEW] - Implementação do SessionManager SQLAlchemy, entidade User, repositório e ajustes de migração
+
+Detalhes:
+
+- Implementação do SessionManager com gerenciamento de ciclo de vida lifespan no FastAPI e pool de conexões - Pedro Victor - 2026-10-28 - #9 - pendente
+- Criação da base declarativa ORM, entidade User (member.user) e UserRepository com injeção de dependência - Pedro Victor - 2026-10-28 - #9 - pendente
+- Atualização do endpoint de registro para POST /api/v1/signup/user com SignupUserRequest e integração ao UserRepository - Pedro Victor - 2026-10-28 - #9 - pendente
+- Correção da tabela signup.country, ampliação de member.user.email nas migrações Alembic e sincronização da documentação e diagramas - Pedro Victor - 2026-10-28 - #9 - pendente
+
+---
+
 2026-10-27 - [NEW] - Estruturação do banco Postgres, migrações de contas e documentação DBML
 
 Detalhes:
 
-- Configuração de infraestrutura PostgreSQL em docker-compose, scripts de inicialização e alvos makefile - Pedro Victor - 2026-10-27 - #9 - pendente
-- Implementação das migrações Alembic para schemas signup e member com tabelas, índices e concessão de privilégios para platform_auth - Pedro Victor - 2026-10-27 - #9 - pendente
-- Refinamento de schemas de resposta com status booleano, injeção de dependência no controller e tratamento de debug no middleware - Pedro Victor - 2026-10-27 - #9 - pendente
-- Elaboração do diagrama de banco relacional em DBML e documentação detalhada de tabelas no MkDocs - Pedro Victor - 2026-10-27 - #9 - pendente
+- Configuração de infraestrutura PostgreSQL em docker-compose, scripts de inicialização e alvos makefile - Pedro Victor - 2026-10-27 - #9 - fccdfdb
+- Implementação das migrações Alembic para schemas signup e member com tabelas, índices e concessão de privilégios para platform_auth - Pedro Victor - 2026-10-27 - #9 - fccdfdb
+- Refinamento de schemas de resposta com status booleano, injeção de dependência no controller e tratamento de debug no middleware - Pedro Victor - 2026-10-27 - #9 - fccdfdb
+- Elaboração do diagrama de banco relacional em DBML e documentação detalhada de tabelas no MkDocs - Pedro Victor - 2026-10-27 - #9 - fccdfdb
 
 ---
 
@@ -39,9 +50,9 @@ Detalhes:
 
 Detalhes:
 
-- Substituição dos contratos genéricos em contracts/ por modelos Pydantic centralizados em schema/default/ - Pedro Victor - 2026-10-22 - #9 - pendente
-- Reorganização do fluxo de registro para pacote modular sob service/signup/ com controller e service dedicados - Pedro Victor - 2026-10-22 - #9 - pendente
-- Atualização de diagramas Mermaid (classes e sequência de signup) e documentação de endpoints no MkDocs - Pedro Victor - 2026-10-22 - #9 - pendente
+- Substituição dos contratos genéricos em contracts/ por modelos Pydantic centralizados em schema/default/ - Pedro Victor - 2026-10-22 - #9 - 39344cc
+- Reorganização do fluxo de registro para pacote modular sob service/signup/ com controller e service dedicados - Pedro Victor - 2026-10-22 - #9 - 39344cc
+- Atualização de diagramas Mermaid (classes e sequência de signup) e documentação de endpoints no MkDocs - Pedro Victor - 2026-10-22 - #9 - 39344cc
 
 ---
 
