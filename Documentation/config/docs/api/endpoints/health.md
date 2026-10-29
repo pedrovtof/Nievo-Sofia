@@ -82,17 +82,18 @@ sequenceDiagram
 #### Error Response (`/exception` or Unhandled Errors):
 ```json
 {
-  "status": "error",
   "message": "Ops! Something went wrong. Try again later.",
   "data": {
-    "details": "division by zero",
+    "details": {
+      "details": "division by zero"
+    },
     "method": "GET",
     "url": "http://localhost:8000/exception"
   },
+  "status": "ERROR",
   "errors": [
     "Internal Server Error"
-  ],
-  "count": 1
+  ]
 }
 ```
 

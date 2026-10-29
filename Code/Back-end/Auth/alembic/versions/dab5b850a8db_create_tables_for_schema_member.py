@@ -17,6 +17,7 @@ depends_on = None
 
 
 def upgrade():
+    """Create user, user_details, and device tables under the member schema."""
     op.execute("""
         CREATE TABLE IF NOT EXISTS member.user (
             id uuid primary key,
@@ -24,6 +25,7 @@ def upgrade():
             nick_name VARCHAR(150) default null,
             email varchar(150) default null,
             phone varchar(50) default null,
+            password text not null,
             active bool default true not null,
             created_at TIMESTAMP default CURRENT_TIMESTAMP not null,
             updated_at TIMESTAMP default CURRENT_TIMESTAMP not null
@@ -45,7 +47,8 @@ def upgrade():
         CREATE TABLE IF NOT EXISTS member.device (
             id uuid primary key,
             user_id uuid not null,
-            x_device_id varchar(50) not null,
+            x_device_id varchar(200) not null,
+            user_agent varchar(200) default null,
             ip_list varchar[] default null,
             active bool default true not null,
             created_at TIMESTAMP default CURRENT_TIMESTAMP not null,
@@ -56,6 +59,7 @@ def upgrade():
 
 
 def downgrade():
+    """Drop device, user_details, and user tables from the member schema."""
     op.execute("""
         DROP TABLE IF EXISTS  member.device;
         DROP TABLE IF EXISTS  member.user_details;

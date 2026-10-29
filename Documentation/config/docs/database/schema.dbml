@@ -65,6 +65,7 @@ Table member.user {
   nick_name varchar(150) [note: 'Public display nickname']
   email varchar(150) [note: 'User email address']
   phone varchar(50) [note: 'Contact phone number']
+  password text [not null, note: 'Bcrypt hashed user password']
   active boolean [not null, default: true, note: 'Active account status flag']
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
   updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
@@ -100,7 +101,8 @@ Table member.user_details {
 Table member.device {
   id uuid [pk, note: 'Primary key for device record']
   user_id uuid [not null, note: 'Foreign key to member.user']
-  x_device_id varchar(50) [not null, note: 'Unique device hardware/fingerprint identifier']
+  x_device_id varchar(200) [not null, note: 'Unique device hardware/fingerprint identifier']
+  user_agent varchar(200) [note: 'Client User-Agent header string']
   ip_list "varchar[]" [note: 'Array of known IP addresses']
   active boolean [not null, default: true]
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]

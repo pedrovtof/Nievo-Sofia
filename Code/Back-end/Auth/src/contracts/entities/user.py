@@ -4,7 +4,7 @@ from typing import Optional
 import uuid
 
 from contracts.entities.model import Base
-from sqlalchemy import Boolean, DateTime, String, Uuid, func
+from sqlalchemy import Boolean, DateTime, String, Text,Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -45,6 +45,12 @@ class User(Base):
         Boolean,
         nullable=False,
         default=True,
+    )
+    password: Mapped[str] = mapped_column(
+        Text,
+        unique=False,
+        nullable=False,
+        default=None,
     )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime,

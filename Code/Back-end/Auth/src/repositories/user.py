@@ -7,9 +7,10 @@ from core.database.session_manager import SessionManager
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from contracts.interface.Irepositories import IRepositories
 
 
-class UserRepository:
+class UserRepository(IRepositories):
     """Data access repository responsible for querying and persisting User entities."""
 
     def __init__(self, db_session: Session = Depends(SessionManager.get_db)) -> None:
@@ -26,8 +27,9 @@ class UserRepository:
         statement = select(User).where(User.email == user_email)
         return self.db.scalars(statement).first()
 
-    def create(self, user: User) -> User:
+    async def create(self, nick_name,email,password) -> User:
         """Persist a new User entity in the database and return the refreshed record."""
+        user = User(nick_name=nick_name, email=email, password=password)
         try:
             self.db.add(user)
             self.db.commit()

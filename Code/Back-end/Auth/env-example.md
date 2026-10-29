@@ -19,3 +19,8 @@ CORS_ALLOW_ORIGINS=<http://localhost,http://localhost:8080>,*
 
 PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING="postgresql://app_migration_accounts:senhasegUr@127.0.0.1:5432/accounts"
 PGSQL_DATABASE_PLATFORM_AUTH_ACCOUNTS_CONNECTION_STRING="postgresql://platform_auth:senhasegUr@127.0.0.1:5432/accounts"
+
+# CRYPTO
+
+ENCODE_ENCRYPT_PASSWORD="utf-8"
+REGEX_FOR_PASSWORD="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$"

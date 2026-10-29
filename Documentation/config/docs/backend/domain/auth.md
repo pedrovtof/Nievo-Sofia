@@ -1,37 +1,107 @@
 # Auth Microservice Domain Models, Schemas & Services
 
 ## 1. Overview
-The **Auth Microservice** is responsible for authentication, identity management, and credential verification within the Sofia ecosystem. This module defines the foundational communication schemas using Pydantic models, standardized API response envelopes, SQLAlchemy database session management, declarative ORM entities, persistence repositories, signup application services, custom logger wrappers, and unhandled exception middleware.
+The **Auth Microservice** is responsible for authentication, identity management, terms compliance, device tracking, and credential security within the Sofia ecosystem. This module defines standardized API response envelopes and status enumerations, domain error catalogs, bcrypt password encryption utilities, SQLAlchemy database session management, declarative ORM entities, abstract repository interfaces, concrete persistence repositories, signup application services, custom logger wrappers, and unhandled exception middleware.
 
 ---
 
-## 2. Architecture & Class Diagram
+## 2. Architecture & Class Diagrams
 
-The following Mermaid class diagram illustrates the object hierarchy of the standard Pydantic response models, SQLAlchemy ORM entities, data access repository, database session manager, signup service components, logging subsystem, and exception handling middleware:
+### 2.1 Core Schemas, Enumerations, Encryption & Exception Middleware
+
+The following Mermaid class diagram illustrates the standardized Pydantic response models, status and error enumerations, password encryption service, logging wrapper, and global exception handling middleware:
 
 ```mermaid
 classDiagram
     direction TB
 
+    class EStatusBaseApi {
+        <<enumeration>>
+        +int SUCESS
+        +int ERROR
+        +int WARNING
+    }
+
+    class EResponseAuth {
+        <<enumeration>>
+        +int id
+        +str message
+        +SIGNUP_400_SIGNUP_USER_USER_ALREADY_EXISTS
+        +SIGNUP_400_SIGNUP_USER_PASSWORD_INVALID
+        +SIGNUP_400_SIGNUP_USER_TERM_INVALID
+        +SIGNUP_400_SIGNUP_USER_NOT_CREATED_AGREEMENTS
+        +SIGNUP_400_SIGNUP_USER_NOT_CREATED_USER
+        +SIGNUP_400_SIGNUP_USER_TERMS_NOT_ACCEPTED
+        +SIGNUP_400_SIGNUP_USER_IP_NOT_FOUND
+        +SIGNUP_400_SIGNUP_USER_USER_AGENT_NOT_FOUND
+        +SIGNUP_400_SIGNUP_USER_DEVICE_ID_NOT_FOUND
+        +SIGNUP_400_SIGNUP_USER_NOT_CREATED_DEVICE
+    }
+
     class BaseApiResponse {
         <<model>>
         +Optional~str~ message
         +Optional~dict~ data
-        +Optional~str~ status
+        +Optional~EStatusBaseApi~ status
     }
 
     class BaseApiSuccess {
         <<model>>
         +str message
-        +str status
+        +EStatusBaseApi status
     }
 
     class BaseApiError {
         <<model>>
         +str message
-        +str status
+        +EStatusBaseApi status
         +Optional~list~ errors
     }
+
+    class CustomLogger {
+        <<service>>
+        -Logger logger
+        +debug(message: str) void
+        +info(message: str) void
+        +warning(message: str) void
+        +error(message: str) void
+        +critical(message: str) void
+    }
+
+    class Encryption {
+        <<service>>
+        -Optional~str~ _encode
+        -Optional~str~ _regex_for_valid_password
+        -CustomLogger _logger
+        +validate_password(password: str) bool
+        +check_password(password: str, hash: bytes) bool
+        +encrypt_password(password: str) str
+    }
+
+    class ServerExceptionHandler {
+        <<middleware>>
+        +Request request
+        +Exception exception
+        +handle_exception() JSONResponse
+    }
+
+    BaseApiResponse <|-- BaseApiSuccess : Generalization
+    BaseApiResponse <|-- BaseApiError : Generalization
+    BaseApiResponse ..> EStatusBaseApi : Uses status enum
+    Encryption --> CustomLogger : Logs encryption errors
+    ServerExceptionHandler ..> BaseApiError : Instantiates error payload
+    ServerExceptionHandler ..> CustomLogger : Logs unhandled exception
+```
+
+---
+
+### 2.2 ORM Entities, Repository Contracts & Signup Application Layer
+
+The following Mermaid class diagram details the SQLAlchemy ORM entities (`member` and `signup` schemas), the `IRepositories` abstraction, concrete data access repositories, and the dependency-injected signup controller and service layer:
+
+```mermaid
+classDiagram
+    direction TB
 
     class Base {
         <<entity>>
@@ -45,9 +115,42 @@ classDiagram
         +Optional~str~ email
         +Optional~str~ phone
         +bool active
+        +str password
         +datetime created_at
         +datetime updated_at
         +__repr__() str
+    }
+
+    class Device {
+        <<entity>>
+        +UUID id
+        +UUID user_id
+        +str x_device_id
+        +Optional~str~ user_agent
+        +Optional~list~ ip_list
+        +bool active
+        +datetime created_at
+        +datetime updated_at
+    }
+
+    class Terms {
+        <<entity>>
+        +int id
+        +str name
+        +str tag
+        +str content
+        +int version
+        +bool active
+        +datetime created_at
+        +datetime updated_at
+    }
+
+    class UserAgreements {
+        <<entity>>
+        +int id
+        +UUID user_id
+        +int term_id
+        +datetime created_at
     }
 
     class SessionManager {
@@ -60,117 +163,186 @@ classDiagram
         +close() void
     }
 
+    class IRepositories {
+        <<interface>>
+        +get_by_id(entity_id: Any) Any
+        +create(**kwargs) Any
+    }
+
     class UserRepository {
         <<repository>>
         +Session db
         +get_by_id(user_id: UUID) Optional~User~
         +get_by_mail(user_email: str) Optional~User~
-        +create(user: User) User
+        +create(nick_name: str, email: str, password: str) User
         +update(user: User) User
+    }
+
+    class DeviceRepository {
+        <<repository>>
+        +Session db
+        +get_by_id(device_id: UUID) Optional~Device~
+        +create(user_id: UUID, x_device_id: str, ip_list: Optional~list~, user_agent: Optional~str~) Device
+    }
+
+    class TermsRepository {
+        <<repository>>
+        +Session db
+        +get_by_id(term_id: int) Optional~Terms~
+        +get_by_tag_and_version(tag: str, version: int) Optional~Terms~
+        +create(name: str, tag: str, content: str, version: int, active: bool) Terms
+    }
+
+    class UserAgreementsRepository {
+        <<repository>>
+        +Session db
+        +get_by_id(agreement_id: int) Optional~UserAgreements~
+        +create(user_id: UUID, term_id: int) UserAgreements
     }
 
     class SignupUserRequest {
         <<model>>
+        +str nick_name
         +EmailStr email
         +str password
         +bool accept_terms
+        +str term_code
+        +int term_version
+        +Optional~str~ client_ip
+        +Optional~str~ x_device_id
+        +Optional~str~ user_agent
     }
 
     class SignupService {
         <<service>>
         -UserRepository _user_repository
+        -UserAgreementsRepository _user_agreement_repository
+        -DeviceRepository _device_repository
+        -TermsRepository _terms_repository
+        -Encryption _encryption_service
         +signup_user(request: SignupUserRequest) JSONResponse
     }
 
-    class CustomLogger {
+    class SignupController {
+        <<controller>>
+        +signup(request: Request, request_contract: SignupUserRequest, signup_service: SignupService, x_forwarded_for: Optional~str~, user_agent: str, x_device_id: str) JSONResponse
+    }
+
+    class Encryption {
         <<service>>
-        -Logger logger
-        +debug(message: str) void
-        +info(message: str) void
-        +warning(message: str) void
-        +error(message: str) void
-        +critical(message: str) void
+        +validate_password(password: str) bool
+        +encrypt_password(password: str) str
     }
 
-    class ServerExceptionHandler {
-        <<middleware>>
-        +Request request
-        +Exception exception
-        +handle_exception() JSONResponse
-    }
-
-    BaseApiResponse <|-- BaseApiSuccess : Generalization
-    BaseApiResponse <|-- BaseApiError : Generalization
     Base <|-- User : Generalization
-    SignupService --> UserRepository : Depends on
-    SignupService ..> SignupUserRequest : Consumes
-    SignupService ..> BaseApiSuccess : Creates response payload
+    Base <|-- Device : Generalization
+    Base <|-- Terms : Generalization
+    Base <|-- UserAgreements : Generalization
+
+    UserRepository ..|> IRepositories : Realization
+    DeviceRepository ..|> IRepositories : Realization
+    TermsRepository ..|> IRepositories : Realization
+    UserAgreementsRepository ..|> IRepositories : Realization
+
     UserRepository ..> SessionManager : Injects DB session
+    DeviceRepository ..> SessionManager : Injects DB session
+    TermsRepository ..> SessionManager : Injects DB session
+    UserAgreementsRepository ..> SessionManager : Injects DB session
+
     UserRepository ..> User : Queries and persists
-    ServerExceptionHandler ..> BaseApiError : Instantiates error payload
-    ServerExceptionHandler ..> CustomLogger : Logs unhandled exception
+    DeviceRepository ..> Device : Queries and persists
+    TermsRepository ..> Terms : Queries and persists
+    UserAgreementsRepository ..> UserAgreements : Queries and persists
+
+    SignupController --> SignupService : Delegates signup
+    SignupController ..> SignupUserRequest : Enriches client metadata
+    SignupService --> UserRepository : Depends on
+    SignupService --> UserAgreementsRepository : Depends on
+    SignupService --> DeviceRepository : Depends on
+    SignupService --> TermsRepository : Depends on
+    SignupService --> Encryption : Depends on
+    SignupService ..> SignupUserRequest : Validates and processes
 ```
 
 ---
 
 ## 3. Specifications & Schemas
 
-### 3.1 Base API Response Schemas
-All microservice endpoints adhere to a standardized JSON response envelope backed by Pydantic models:
+### 3.1 Base API Response Schemas & Enumerations
+All microservice endpoints adhere to a standardized JSON response envelope backed by Pydantic models and typed status enums:
 
+- **[`EStatusBaseApi`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/enum/Estatus_base_api.py)**:
+  - Defines canonical envelope statuses: `SUCESS` (`1`), `ERROR` (`2`), and `WARNING` (`3`).
+- **[`EResponseAuth`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/enum/Eresponse_auth.py)**:
+  - Domain error catalog following `SERVICE_HTTPSTATUS_METHOD_REASON`, mapping structured numeric error IDs (`1` through `8`) and user-facing validation messages for signup flows.
 - **[`BaseApiResponse`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_response.py)**:
-  - `status`: String indicator (`"true"` or `"false"`).
+  - `status`: Standardized `EStatusBaseApi` indicator.
   - `message`: User-friendly human-readable message.
   - `data`: Arbitrary dictionary payload containing response details.
   - Serialized via Pydantic `model_dump(mode="json")`.
-
 - **[`BaseApiSuccess`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_sucess.py)**:
-  - Extends `BaseApiResponse` with default values: `status="true"`, `message="executed with success"`.
-
+  - Extends `BaseApiResponse` with defaults: `status="SUCESS"` (`EStatusBaseApi.SUCESS.name`), `message="executed with success"`.
 - **[`BaseApiError`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_error.py)**:
-  - Extends `BaseApiResponse` with default values: `status="false"`, `message="An error occurred"`.
-  - Additional field `errors`: List of validation or domain error strings.
+  - Extends `BaseApiResponse` with defaults: `status="ERROR"` (`EStatusBaseApi.ERROR.name`), `message="An error occurred"`.
+  - Additional field `errors`: List of numeric domain error codes or validation error strings.
 
-### 3.2 Database Session Management & ORM Persistence
+### 3.2 Password Encryption & Policy Service
+- **[`Encryption`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/encryption.py)**:
+  - Loads `ENCODE_ENCRYPT_PASSWORD` and `REGEX_FOR_PASSWORD` from environment variables on initialization.
+  - `validate_password(password)`: Verifies password complexity against `REGEX_FOR_PASSWORD` (`re.fullmatch`).
+  - `encrypt_password(password)`: Generates a salt via `bcrypt.gensalt()` and hashes the encoded password with `bcrypt.hashpw`, logging unexpected failures through `CustomLogger`.
+  - `check_password(password, hash)`: Verifies plain-text password attempts against stored bcrypt hashes via `bcrypt.checkpw`.
+
+### 3.3 Database Session Management, ORM Entities & Repositories
 - **[`SessionManager`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/database/session_manager.py)**:
-  - Manages the SQLAlchemy `Engine` connection pool (`pool_pre_ping=True`, configurable `pool_size` and `max_overflow`) and `sessionmaker` lifecycle.
-  - Initialized during FastAPI `lifespan` startup via `PGSQL_DATABASE_PLATFORM_AUTH_ACCOUNTS_CONNECTION_STRING` and disposed gracefully on shutdown.
-  - Exposes `get_db()` generator dependency for FastAPI routes with automatic rollback on unhandled exceptions and deterministic session cleanup.
-- **[`Base`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/model.py)** & **[`User`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/user.py)**:
-  - SQLAlchemy 2.0 `DeclarativeBase` and `User` entity mapped to `member.user` with UUIDv7 primary key generation (`id`), profile attributes (`full_name`, `nick_name`, `email`, `phone`), `active` status flag, and audit timestamps (`created_at`, `updated_at`).
-- **[`UserRepository`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user.py)**:
-  - Encapsulates data access operations against `member.user` using an injected SQLAlchemy `Session`: `get_by_id`, `get_by_mail`, `create`, and `update` with transactional rollback protection.
+  - Manages the SQLAlchemy `Engine` connection pool (`pool_pre_ping=True`, configurable `pool_size` and `max_overflow`) and `sessionmaker` lifecycle during FastAPI `lifespan`.
+- **[`IRepositories`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/interface/Irepositories.py)**:
+  - Abstract base contract (`ABC`) enforcing `get_by_id` and `create` across all persistence repositories.
+- **ORM Entities**:
+  - **[`Base`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/model.py)**: SQLAlchemy 2.0 `DeclarativeBase`.
+  - **[`User`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/user.py)**: Mapped to `member.user` with UUIDv7 `id`, `full_name`, `nick_name`, `email`, `phone`, `password` (bcrypt hash), `active`, `created_at`, and `updated_at`.
+  - **[`Device`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/device.py)**: Mapped to `member.device` with UUIDv7 `id`, `user_id`, `x_device_id` (`String(200)`), `user_agent` (`String(200)`), `ip_list` (`ARRAY(String)`), `active`, `created_at`, and `updated_at`.
+  - **[`Terms`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/terms.py)**: Mapped to `signup.terms` with integer `id`, `name`, `tag`, `content`, `version`, `active`, `created_at`, and `updated_at`.
+  - **[`UserAgreements`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/user_agreements.py)**: Mapped to `signup.user_agreements` with integer `id`, `user_id`, `term_id`, and `created_at`.
+- **Concrete Repositories**:
+  - **[`UserRepository`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user.py)**: Implements `get_by_id`, `get_by_mail`, `create(nick_name, email, password)`, and `update` with rollback protection.
+  - **[`DeviceRepository`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/device.py)**: Implements `get_by_id` and `create(user_id, x_device_id, ip_list, user_agent)`.
+  - **[`TermsRepository`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/terms.py)**: Implements `get_by_id`, `get_by_tag_and_version(tag, version)` (filtering `active == True`), and `create`.
+  - **[`UserAgreementsRepository`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user_agreements.py)**: Implements `get_by_id` and `create(user_id, term_id)`.
 
-### 3.3 Signup Domain Service & Validation
+### 3.4 Signup Domain Service & Validation
 - **[`SignupUserRequest`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/request.py)**:
-  - Validates `email` as a valid email address via `EmailStr`.
-  - Restricts `password` between 6 and 20 characters.
-  - Requires explicit boolean confirmation for `accept_terms`.
+  - Validates `nick_name` (1–150 chars), `email` (`EmailStr`), `password` (8–16 chars), `accept_terms` (`bool`), `term_code` (1–50 chars), and `term_version` (`>= 1`).
+  - Carries excluded runtime context fields (`client_ip`, `x_device_id`, `user_agent`) populated by the HTTP controller from request headers and socket metadata.
 - **[`SignupService`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/service.py)**:
-  - Receives an injected `UserRepository` dependency via FastAPI `Depends`.
-  - Executes `signup_user(request)` and returns an HTTP 202 Accepted envelope.
+  - Orchestrates client metadata checks, terms acceptance verification, duplicate email prevention, active terms lookup, password regex validation, bcrypt hashing, and persistence of `User`, `UserAgreements`, and `Device`, returning `201 Created` (`BaseApiSuccess`) or `400 Bad Request` (`BaseApiError` with `EResponseAuth` code).
 
-### 3.4 Core Logging Subsystem
+### 3.5 Core Logging & Server Exception Handler
 - **[`CustomLogger`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/logging.py)**:
-  - Encapsulates Python's native `logging.Logger`.
-  - Configured with default timestamp format `YYYY-MM-DD HH:MM:SS` and log levels (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`).
-
-### 3.5 Server Exception Handler
+  - Encapsulates Python's native `logging.Logger` with `YYYY-MM-DD HH:MM:SS` timestamps across `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL` levels.
 - **[`ServerExceptionHandler`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/middleware/server_exception_handler.py)**:
-  - Intercepts unexpected runtime exceptions during HTTP request lifecycle.
-  - Records error logs using `CustomLogger.error(...)` including request method and URL.
-  - Generates a structured HTTP 500 JSON response utilizing `BaseApiError`. Exception details are sanitized and only included in payload when `DEBUG="True"`.
+  - Intercepts unhandled runtime exceptions, logs request context via `CustomLogger.error(...)`, and returns an HTTP 500 `BaseApiError` JSON response (exposing exception details only when `DEBUG="True"`).
 
 ---
 
 ## 4. Related Implementation Files
+- [`Estatus_base_api.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/enum/Estatus_base_api.py)
+- [`Eresponse_auth.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/enum/Eresponse_auth.py)
+- [`encryption.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/encryption.py)
 - [`base_api_response.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_response.py)
 - [`base_api_sucess.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_sucess.py)
 - [`base_api_error.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_error.py)
 - [`session_manager.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/database/session_manager.py)
+- [`Irepositories.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/interface/Irepositories.py)
 - [`model.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/model.py)
 - [`user.py` (Entity)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/user.py)
+- [`device.py` (Entity)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/device.py)
+- [`terms.py` (Entity)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/terms.py)
+- [`user_agreements.py` (Entity)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/contracts/entities/user_agreements.py)
 - [`user.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user.py)
+- [`device.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/device.py)
+- [`terms.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/terms.py)
+- [`user_agreements.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user_agreements.py)
 - [`request.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/request.py)
 - [`service.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/service.py)
 - [`controller.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/controller.py)

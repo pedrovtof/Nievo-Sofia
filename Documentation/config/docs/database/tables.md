@@ -79,6 +79,7 @@ Table member.user {
   nick_name varchar(150) [note: 'Public display nickname']
   email varchar(150) [note: 'User email address']
   phone varchar(50) [note: 'Contact phone number']
+  password text [not null, note: 'Bcrypt hashed user password']
   active boolean [not null, default: true, note: 'Active account status flag']
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
   updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
@@ -114,7 +115,8 @@ Table member.user_details {
 Table member.device {
   id uuid [pk, note: 'Primary key for device record']
   user_id uuid [not null, note: 'Foreign key to member.user']
-  x_device_id varchar(50) [not null, note: 'Unique device hardware/fingerprint identifier']
+  x_device_id varchar(200) [not null, note: 'Unique device hardware/fingerprint identifier']
+  user_agent varchar(200) [note: 'Client User-Agent header string']
   ip_list "varchar[]" [note: 'Array of known IP addresses']
   active boolean [not null, default: true]
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
@@ -149,18 +151,18 @@ TableGroup member_domain {
 ## 3. Data Dictionary & Specifications
 
 ### 3.1 Schema `signup`
-- **`signup.terms`**: Legal agreements and terms of use. Indexed uniquely by `(tag, version)`.
+- **`signup.terms`**: Legal agreements and terms of use mapped by the SQLAlchemy `Terms` ORM entity. Indexed uniquely by `(tag, version)`.
 - **`signup.country`**: List of eligible nations with unique country code `tag`.
-- **`signup.user_agreements`**: Junction table auditing when each user agreed to specific terms versions. Indexed uniquely by `(user_id, term_id)`.
+- **`signup.user_agreements`**: Junction table mapped by the SQLAlchemy `UserAgreements` ORM entity, auditing when each user agreed to specific terms versions. Indexed uniquely by `(user_id, term_id)`.
 
 ### 3.2 Schema `member`
-- **`member.user`**: Core account entity mapped by the SQLAlchemy `User` ORM model. Enforces unique indexes on `email` (`varchar(150)`) and `phone` (`varchar(50)`).
+- **`member.user`**: Core account entity mapped by the SQLAlchemy `User` ORM model. Stores bcrypt password hashes (`password` as `text not null`) and enforces unique indexes on `email` (`varchar(150)`) and `phone` (`varchar(50)`).
 - **`member.user_details`**: 1-to-1 extension containing demographic and verification attributes (unique on `user_id` and `document`).
-- **`member.device`**: Device audit and multi-factor tracking records linked to users via `user_id`.
+- **`member.device`**: Device audit and multi-factor tracking records mapped by the SQLAlchemy `Device` ORM entity, linked to users via `user_id` with `x_device_id` (`varchar(200)`), `user_agent` (`varchar(200)`), and `ip_list` (`varchar[]`).
 
 ### 3.3 Database Roles & Privileges
 - **Migration Role (`role_migration` / `app_migration_accounts`)**: Dedicated migration role with schema creation and DDL administration rights.
-- **Application User (`platform_auth`)**: Dedicated least-privilege runtime user with `SELECT`, `INSERT`, `UPDATE` grants on domain tables and sequence usage privileges.
+- **Application User (`platform_auth`)**: Dedicated least-privilege runtime user with `SELECT`, `INSERT`, `UPDATE` grants on domain tables, default sequence privileges in `member` and `signup` schemas, and explicit sequence grants on `signup.country_id_seq`, `signup.terms_id_seq`, and `signup.user_agreements_id_seq`.
 
 ---
 

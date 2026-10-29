@@ -24,6 +24,17 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-29 - [NEW] - Implementação completa do registro de usuário com criptografia bcrypt, aceite de termos e cadastro de dispositivo
+
+Detalhes:
+
+- Implementação do serviço Encryption com validação regex de senha e hash bcrypt, além dos enums EStatusBaseApi e EResponseAuth - Pedro Victor - 2026-10-29 - #9 - pendente
+- Criação da interface IRepositories, entidades ORM (Device, Terms, UserAgreements), campo password em User e respectivos repositórios - Pedro Victor - 2026-10-29 - #9 - pendente
+- Implementação das validações de headers, termos ativos, unicidade de e-mail e persistência completa em POST /api/v1/signup/user (HTTP 201) - Pedro Victor - 2026-10-29 - #9 - pendente
+- Ajustes nas migrações Alembic (member.user, member.device e grants de sequences), README do Auth e sincronização dos diagramas DBML e Mermaid - Pedro Victor - 2026-10-29 - #9 - pendente
+
+---
+
 2026-10-28 - [FIX] - Ajustes na entidade User, indentação do repositório e sincronização de diagramas
 
 Detalhes:

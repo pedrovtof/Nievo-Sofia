@@ -18,18 +18,30 @@ Code/Back-end/Auth/
 ├── src/
 │   ├── api/                      # Modular API routing
 │   │   └── router.py
-│   ├── contracts/                # Domain contracts & SQLAlchemy ORM entities
-│   │   └── entities/
-│   │       ├── model.py          # DeclarativeBase configuration
-│   │       └── user.py           # User ORM entity (member.user)
-│   ├── core/                     # Cross-cutting concerns, DB & middleware
+│   ├── contracts/                # Domain contracts, interfaces & SQLAlchemy ORM entities
+│   │   ├── entities/
+│   │   │   ├── device.py         # Device ORM entity (member.device)
+│   │   │   ├── model.py          # DeclarativeBase configuration
+│   │   │   ├── terms.py          # Terms ORM entity (signup.terms)
+│   │   │   ├── user.py           # User ORM entity (member.user)
+│   │   │   └── user_agreements.py # UserAgreements ORM entity (signup.user_agreements)
+│   │   └── interface/
+│   │       └── Irepositories.py  # Abstract repository contract (IRepositories)
+│   ├── core/                     # Cross-cutting concerns, DB, crypto, enums & middleware
 │   │   ├── database/
 │   │   │   └── session_manager.py # SQLAlchemy Engine & Session lifecycle manager
+│   │   ├── encryption.py         # Password policy regex validation & bcrypt hashing
+│   │   ├── enum/
+│   │   │   ├── Eresponse_auth.py # Domain error codes and messages catalog
+│   │   │   └── Estatus_base_api.py # Standardized API response status enum
 │   │   ├── logging.py            # CustomLogger wrapper
 │   │   └── middleware/
 │   │       └── server_exception_handler.py # Global 500 handler
 │   ├── repositories/             # Data access repositories
-│   │   └── user.py               # UserRepository persistence operations
+│   │   ├── device.py             # DeviceRepository persistence operations
+│   │   ├── terms.py              # TermsRepository persistence operations
+│   │   ├── user.py               # UserRepository persistence operations
+│   │   └── user_agreements.py    # UserAgreementsRepository persistence operations
 │   ├── schema/                   # Standardized Pydantic response schemas
 │   │   └── default/
 │   │       ├── base_api_response.py
@@ -63,6 +75,9 @@ Create a `.env` file based on [`env-example.md`](file:///home/pedrovotf/Desktop/
 | `TELEMETRY_TRACING` | OpenTelemetry tracing enablement | `True` |
 | `PGSQL_DATABASE_AUTH_MIGRATION_CONNECTION_STRING` | PostgreSQL Alembic migration connection string (`app_migration_accounts`) | `postgresql://...` |
 | `PGSQL_DATABASE_PLATFORM_AUTH_ACCOUNTS_CONNECTION_STRING` | PostgreSQL application runtime connection string (`platform_auth`) | `postgresql://...` |
+| `SALT_ENCRYPT_PASSWORD` | Cryptographic salt reference for password encryption configuration | `<generated-salt>` |
+| `ENCODE_ENCRYPT_PASSWORD` | Character encoding used for bcrypt password hashing | `utf-8` |
+| `REGEX_FOR_PASSWORD` | Password complexity validation regular expression | `^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$` |
 
 ---
 

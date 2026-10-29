@@ -2,6 +2,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel
 from http import HTTPStatus
+from core.enum.Estatus_base_api import EStatusBaseApi
 from fastapi.responses import JSONResponse
 
 class BaseApiResponse(BaseModel):
@@ -10,4 +11,4 @@ class BaseApiResponse(BaseModel):
     """
     message: Optional[str] = None                                                                                                                    
     data: Optional[dict[str, Any]] = None                                                                                                  
-    status: Optional[str] = None
+    status: Optional[EStatusBaseApi] = None

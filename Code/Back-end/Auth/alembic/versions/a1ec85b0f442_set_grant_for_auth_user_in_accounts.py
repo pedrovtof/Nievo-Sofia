@@ -17,6 +17,7 @@ depends_on = None
 
 
 def upgrade():
+    """Grant schema, table, and sequence privileges in accounts to platform_auth."""
     op.execute("""
         GRANT CONNECT ON DATABASE accounts TO platform_auth;
         GRANT USAGE ON SCHEMA member TO platform_auth;
@@ -27,13 +28,18 @@ def upgrade():
         GRANT SELECT, INSERT, UPDATE ON TABLE signup.country TO platform_auth;
         GRANT SELECT, INSERT, UPDATE ON TABLE signup.terms TO platform_auth;
         GRANT SELECT, INSERT, UPDATE ON TABLE signup.user_agreements TO platform_auth;
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO platform_auth;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA member GRANT USAGE, SELECT ON SEQUENCES TO platform_auth;
         ALTER DEFAULT PRIVILEGES IN SCHEMA signup GRANT USAGE, SELECT ON SEQUENCES TO platform_auth;
+        GRANT ALL ON SEQUENCE signup.country_id_seq TO platform_auth;
+        GRANT ALL ON SEQUENCE signup.terms_id_seq TO platform_auth;
+        GRANT ALL ON SEQUENCE signup.user_agreements_id_seq TO platform_auth;
+
     """)
     pass
 
 
 def downgrade():
+    """Revoke schema, table, and sequence privileges in accounts from platform_auth."""
     op.execute("""
         REVOKE CONNECT ON DATABASE accounts FROM platform_auth;
         REVOKE USAGE ON SCHEMA member FROM platform_auth;
@@ -44,7 +50,10 @@ def downgrade():
         REVOKE SELECT, INSERT, UPDATE ON TABLE signup.country FROM platform_auth;
         REVOKE SELECT, INSERT, UPDATE ON TABLE signup.terms FROM platform_auth;
         REVOKE SELECT, INSERT, UPDATE ON TABLE signup.user_agreements FROM platform_auth;
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE USAGE, SELECT ON SEQUENCES FROM platform_auth;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA member REVOKE USAGE, SELECT ON SEQUENCES FROM platform_auth;
         ALTER DEFAULT PRIVILEGES IN SCHEMA signup REVOKE USAGE, SELECT ON SEQUENCES FROM platform_auth;
+        REVOKE ALL ON SEQUENCE signup.country_id_seq FROM platform_auth;
+        REVOKE ALL ON SEQUENCE signup.terms_id_seq FROM platform_auth;
+        REVOKE ALL ON SEQUENCE signup.user_agreements_id_seq FROM platform_auth;
     """)
     pass
