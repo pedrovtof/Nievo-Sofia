@@ -17,7 +17,7 @@ class UserAgreementsRepository(IRepositories):
         """Initialize the repository with an active SQLAlchemy database session."""
         self.db = db_session
 
-    async def get_by_id(self, agreement_id: int) -> Optional[UserAgreements]:
+    async def get_by_id(self, agreement_id: uuid.UUID) -> Optional[UserAgreements]:
         """Retrieve a user agreement record by its unique UUID identifier."""
         statement = select(UserAgreements).where(UserAgreements.id == agreement_id)
         return self.db.scalars(statement).first()

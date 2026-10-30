@@ -24,15 +24,23 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-30 - [FIX] - Correção do tipo de identificador de acordo de usuário para UUID no repositório
+
+Detalhes:
+
+- Ajuste da assinatura do método get_by_id em UserAgreementsRepository para aceitar uuid.UUID - Pedro Victor - 2026-10-30 - #9 - pendente
+
+---
+
 2026-10-30 - [NEW] - Adição de persistência de detalhes do usuário, validação de faixa etária e transação atômica no cadastro
 
 Detalhes:
 
-- Criação da entidade UserDetails e repositório UserDetailsRepository para persistência em member.user_details - Pedro Victor - 2026-10-30 - #9 - pendente
-- Implementação de validação de data de nascimento e faixa etária mínima/máxima configurável no fluxo de cadastro - Pedro Victor - 2026-10-30 - #9 - pendente
-- Adoção de transação atômica com rollback explícito e método create_without_commit nos repositórios durante o signup - Pedro Victor - 2026-10-30 - #9 - pendente
-- Atualização das migrações Alembic para chave primária UUID em user_agreements e ajustes de tamanho de colunas em user_details - Pedro Victor - 2026-10-30 - #9 - pendente
-- Atualização completa dos diagramas Mermaid e DBML e portabilidade de links relativos na documentação MkDocs e READMEs - Pedro Victor - 2026-10-30 - #9 - pendente
+- Criação da entidade UserDetails e repositório UserDetailsRepository para persistência em member.user_details - Pedro Victor - 2026-10-30 - #9 - 719b9f2
+- Implementação de validação de data de nascimento e faixa etária mínima/máxima configurável no fluxo de cadastro - Pedro Victor - 2026-10-30 - #9 - 719b9f2
+- Adoção de transação atômica com rollback explícito e método create_without_commit nos repositórios durante o signup - Pedro Victor - 2026-10-30 - #9 - 719b9f2
+- Atualização das migrações Alembic para chave primária UUID em user_agreements e ajustes de tamanho de colunas em user_details - Pedro Victor - 2026-10-30 - #9 - 719b9f2
+- Atualização completa dos diagramas Mermaid e DBML e portabilidade de links relativos na documentação MkDocs e READMEs - Pedro Victor - 2026-10-30 - #9 - 719b9f2
 
 ---
 
