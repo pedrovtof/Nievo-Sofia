@@ -51,7 +51,9 @@ Code/Back-end/Auth/
 │   │   └── signup/               # User registration feature package
 │   │       ├── controller.py
 │   │       ├── request.py
-│   │       └── service.py
+│   │       ├── service.py
+│   │       └── validator/        # Request payload & metadata validators
+│   │           └── signup_user_validator.py
 │   ├── test/                     # Automated unit and integration test suites
 │   │   ├── integration/
 │   │   └── unit/

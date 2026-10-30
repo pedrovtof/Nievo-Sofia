@@ -244,6 +244,11 @@ classDiagram
         +Optional~str~ user_agent
     }
 
+    class SignupUserValidator {
+        <<validator>>
+        +validate_request(request: SignupUserRequest)$ tuple~HTTPStatus, BaseApiResponse~
+    }
+
     class SignupService {
         <<service>>
         -CustomLogger _logger
@@ -294,13 +299,15 @@ classDiagram
 
     SignupController --> SignupService : Delegates signup
     SignupController ..> SignupUserRequest : Enriches client metadata
+    SignupService --> SignupUserValidator : Delegates validation
+    SignupUserValidator ..> SignupUserRequest : Validates metadata and age
     SignupService --> UserRepository : Depends on
     SignupService --> UserDetailsRepository : Depends on
     SignupService --> UserAgreementsRepository : Depends on
     SignupService --> DeviceRepository : Depends on
     SignupService --> TermsRepository : Depends on
     SignupService --> Encryption : Depends on
-    SignupService ..> SignupUserRequest : Validates and processes
+    SignupService ..> SignupUserRequest : Processes
 ```
 
 ---
@@ -354,9 +361,11 @@ All microservice endpoints adhere to a standardized JSON response envelope backe
 ### 3.4 Signup Domain Service & Validation
 - **[`SignupUserRequest`](../../../../../Code/Back-end/Auth/src/service/signup/request.py)**:
   - Validates `nick_name` (1–150 chars), `email` (`EmailStr`), `password` (8–16 chars), `accept_terms` (`bool`), `term_code` (1–50 chars), `term_version` (`>= 1`), and `born_date` (`PastDate`).
-  - Carries excluded runtime context fields (`client_ip`, `x_device_id`, `user_agent`) populated by the HTTP controller from request headers and socket metadata.
+  - Carries optional excluded runtime context fields (`client_ip`, `x_device_id`, `user_agent`) populated by the HTTP controller from request headers and socket metadata.
+- **[`SignupUserValidator`](../../../../../Code/Back-end/Auth/src/service/signup/validator/signup_user_validator.py)**:
+  - Validates client telemetry headers (`client_ip`, `user_agent`, `x_device_id`), terms acceptance consent (`accept_terms is True`), and age bounds against `MIN_AGE_FOR_ACCOUNT` and `MAX_AGE_FOR_ACCOUNT`.
 - **[`SignupService`](../../../../../Code/Back-end/Auth/src/service/signup/service.py)**:
-  - Orchestrates client metadata checks, terms acceptance verification, age policy gate (`MIN_AGE_FOR_ACCOUNT` to `MAX_AGE_FOR_ACCOUNT`), duplicate email prevention, active terms lookup, password regex validation, and bcrypt hashing.
+  - Orchestrates validation delegation to `SignupUserValidator`, duplicate email prevention, active terms lookup, password regex validation, and bcrypt hashing.
   - Manages atomic relational persistence via an explicit SQLAlchemy session transaction (`self._db_transaction`): executes `create_without_commit` across `User`, `UserDetails`, `UserAgreements`, and `Device`, executing `rollback()` on failure or `commit()` returning HTTP 201 `BaseApiSuccess`.
 
 ### 3.5 Core Logging & Server Exception Handler
@@ -388,6 +397,7 @@ All microservice endpoints adhere to a standardized JSON response envelope backe
 - [`terms.py` (Repository)](../../../../../Code/Back-end/Auth/src/repositories/terms.py)
 - [`user_agreements.py` (Repository)](../../../../../Code/Back-end/Auth/src/repositories/user_agreements.py)
 - [`request.py`](../../../../../Code/Back-end/Auth/src/service/signup/request.py)
+- [`signup_user_validator.py`](../../../../../Code/Back-end/Auth/src/service/signup/validator/signup_user_validator.py)
 - [`service.py`](../../../../../Code/Back-end/Auth/src/service/signup/service.py)
 - [`controller.py`](../../../../../Code/Back-end/Auth/src/service/signup/controller.py)
 - [`logging.py`](../../../../../Code/Back-end/Auth/src/core/logging.py)

@@ -17,6 +17,7 @@ sequenceDiagram
         participant App as FastAPI App
         participant Controller as SignupController
         participant Service as SignupService
+        participant Validator as SignupUserValidator
         participant Crypto as Encryption
         participant Handler as ServerExceptionHandler
     end
@@ -45,21 +46,16 @@ sequenceDiagram
         Controller ->> Service: signup_user(request_contract)
         activate Service
 
-        alt Missing IP / User-Agent / X-Device-Id or Terms Not Accepted
-            Service -->> Controller: (400, BaseApiError IDs 4, 5, 6, 7)
+        Service ->>+ Validator: validate_request(request_contract)
+        Validator -->>- Service: (status, response)
+
+        alt Metadata Missing, Terms Not Accepted, or Invalid Age (400)
+            Service -->> Controller: (400, BaseApiError IDs 4, 5, 6, 7, 11)
             Controller ->> Controller: Log warning if BaseApiError
             Controller -->> App: JSONResponse (400)
             App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [id]}
-        else Required Metadata & Consent Present
-            Service ->> Service: Calculate age from born_date
-
-            alt Age < MIN_AGE_FOR_ACCOUNT or Age > MAX_AGE_FOR_ACCOUNT
-                Service -->> Controller: (400, BaseApiError ID 11)
-                Controller ->> Controller: Log warning if BaseApiError
-                Controller -->> App: JSONResponse (400)
-                App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [11]}
-            else Valid Age Range
-                Service ->>+ UserRepo: get_by_mail(email)
+        else Valid Request Metadata & Eligibility
+            Service ->>+ UserRepo: get_by_mail(email)
                 UserRepo ->>+ DB: SELECT FROM member.user WHERE email = ?
                 DB -->>- UserRepo: User record or None
                 UserRepo -->>- Service: Optional[User]
@@ -269,6 +265,7 @@ sequenceDiagram
 - [`router.py`](../../../../../Code/Back-end/Auth/src/api/router.py)
 - [`controller.py`](../../../../../Code/Back-end/Auth/src/service/signup/controller.py)
 - [`service.py`](../../../../../Code/Back-end/Auth/src/service/signup/service.py)
+- [`signup_user_validator.py`](../../../../../Code/Back-end/Auth/src/service/signup/validator/signup_user_validator.py)
 - [`request.py`](../../../../../Code/Back-end/Auth/src/service/signup/request.py)
 - [`encryption.py`](../../../../../Code/Back-end/Auth/src/core/encryption.py)
 - [`Eresponse_auth.py`](../../../../../Code/Back-end/Auth/src/core/enum/Eresponse_auth.py)

@@ -24,11 +24,21 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-30 - [REFACTOR] - Extração da validação de requisição de cadastro para SignupUserValidator e criação de testes
+
+Detalhes:
+
+- Criação da classe SignupUserValidator desacoplando validações de IP, User-Agent, Device ID, aceite de termos e idade de SignupService - Pedro Victor - 2026-10-30 - #9 - pendente
+- Adição de testes unitários para SignupUserValidator e SignupService, e testes de integração para o endpoint de cadastro - Pedro Victor - 2026-10-30 - #9 - pendente
+- Atualização dos diagramas de classe, sequência e fluxo de decisão no MkDocs e README do microserviço de autenticação - Pedro Victor - 2026-10-30 - #9 - pendente
+
+---
+
 2026-10-30 - [FIX] - Correção do tipo de identificador de acordo de usuário para UUID no repositório
 
 Detalhes:
 
-- Ajuste da assinatura do método get_by_id em UserAgreementsRepository para aceitar uuid.UUID - Pedro Victor - 2026-10-30 - #9 - pendente
+- Ajuste da assinatura do método get_by_id em UserAgreementsRepository para aceitar uuid.UUID - Pedro Victor - 2026-10-30 - #9 - 8218fd4
 
 ---
 

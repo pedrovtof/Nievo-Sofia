@@ -16,7 +16,8 @@ flowchart TD
     ValidateSchema -->|"No"| Reject422(["End: 422 Unprocessable Entity"])
 
     ValidateSchema -->|"Yes"| ResolveHeaders["Resolve client_ip, user_agent, and x_device_id"]
-    ResolveHeaders --> CheckIP{"Is client_ip Present?"}
+    ResolveHeaders --> ValidateRequest[["SignupUserValidator.validate_request"]]
+    ValidateRequest --> CheckIP{"Is client_ip Present?"}
     CheckIP -->|"No"| RejectIP(["End: 400 Bad Request - Error ID 5"])
 
     CheckIP -->|"Yes"| CheckUA{"Is User-Agent Present?"}

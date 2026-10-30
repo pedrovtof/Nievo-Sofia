@@ -10,6 +10,7 @@ from schema.default.base_api_sucess import BaseApiSuccess
 from schema.default.base_api_response import BaseApiResponse
 from schema.default.base_api_error import BaseApiError
 from service.signup.request import SignupUserRequest
+from service.signup.validator.signup_user_validator import SignupUserValidator
 from core.database.session_manager import SessionManager
 from datetime import datetime
 from sqlalchemy.orm import Session
@@ -48,45 +49,10 @@ class SignupService:
 
         response : BaseApiResponse = None
 
-        if request.client_ip is None:
-            response = BaseApiError(
-                errors=[EResponseAuth.SIGNUP_400_SIGNUP_USER_IP_NOT_FOUND.id],
-                message=EResponseAuth.SIGNUP_400_SIGNUP_USER_IP_NOT_FOUND.message
-            )
-            return HTTPStatus.BAD_REQUEST, response
+        status, response = await SignupUserValidator.validate_request(request)
 
-        if request.user_agent is None:
-            response = BaseApiError(
-                errors=[EResponseAuth.SIGNUP_400_SIGNUP_USER_USER_AGENT_NOT_FOUND.id],
-                message=EResponseAuth.SIGNUP_400_SIGNUP_USER_USER_AGENT_NOT_FOUND.message
-            )
-            return HTTPStatus.BAD_REQUEST, response
-
-        if request.x_device_id is None:
-            response = BaseApiError(
-                errors=[EResponseAuth.SIGNUP_400_SIGNUP_USER_DEVICE_ID_NOT_FOUND.id],
-                message=EResponseAuth.SIGNUP_400_SIGNUP_USER_DEVICE_ID_NOT_FOUND.message
-            )
-            return HTTPStatus.BAD_REQUEST,response
-
-        if request.accept_terms is not True:
-            response = BaseApiError(
-                errors=[EResponseAuth.SIGNUP_400_SIGNUP_USER_TERMS_NOT_ACCEPTED.id],
-                message=EResponseAuth.SIGNUP_400_SIGNUP_USER_TERMS_NOT_ACCEPTED.message
-            )
-            return HTTPStatus.BAD_REQUEST, response
-
-        born_date = datetime.strptime(str(request.born_date), "%Y-%m-%d")
-        data_diff = abs(born_date - datetime.now())
-        years_diff, _ = divmod(data_diff.days, 365)
-
-        if years_diff < int(os.getenv("MIN_AGE_FOR_ACCOUNT",6)) or years_diff > int(os.getenv("MAX_AGE_FOR_ACCOUNT",110)):
-            response = BaseApiError(
-                errors=[EResponseAuth.SIGNUP_400_SIGNUP_USER_WITH_INVALID_BIRTH_DATE.id],
-                message=EResponseAuth.SIGNUP_400_SIGNUP_USER_WITH_INVALID_BIRTH_DATE.message
-            )
-            return HTTPStatus.BAD_REQUEST,response
-        
+        if status is not None:
+            return status, response
 
         user = await self._user_repository.get_by_mail(request.email)
         if user:

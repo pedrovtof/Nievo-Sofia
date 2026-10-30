@@ -13,6 +13,6 @@ class SignupUserRequest(BaseModel):
     term_version: int =Field(...,ge=1, description="The term version that the user accepts.")
     born_date: PastDate = Field(..., description="The user's birth date (YYYY-MM-DD)")
 
-    client_ip: str = Field(default=None, exclude=True)
-    x_device_id: str = Field(default=None, exclude=True)
-    user_agent: str = Field(default=None, exclude=True)
+    client_ip: Optional[str] = Field(default=None, exclude=True)
+    x_device_id: Optional[str] = Field(default=None, exclude=True)
+    user_agent: Optional[str] = Field(default=None, exclude=True)
