@@ -24,13 +24,21 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-30 - [TEST] - Cobertura unitária de todos os fluxos de retorno do serviço de cadastro
+
+Detalhes:
+
+- Implementação de testes unitários para cada uma das 9 opções de retorno em SignupService.signup_user (validador, duplicidade, termo inválido, política de senha, falhas de persistência com rollback e sucesso 201) - Pedro Victor - 2026-10-30 - #9 - pendente
+
+---
+
 2026-10-30 - [REFACTOR] - Extração da validação de requisição de cadastro para SignupUserValidator e criação de testes
 
 Detalhes:
 
-- Criação da classe SignupUserValidator desacoplando validações de IP, User-Agent, Device ID, aceite de termos e idade de SignupService - Pedro Victor - 2026-10-30 - #9 - pendente
-- Adição de testes unitários para SignupUserValidator e SignupService, e testes de integração para o endpoint de cadastro - Pedro Victor - 2026-10-30 - #9 - pendente
-- Atualização dos diagramas de classe, sequência e fluxo de decisão no MkDocs e README do microserviço de autenticação - Pedro Victor - 2026-10-30 - #9 - pendente
+- Criação da classe SignupUserValidator desacoplando validações de IP, User-Agent, Device ID, aceite de termos e idade de SignupService - Pedro Victor - 2026-10-30 - #9 - 639cab2
+- Adição de testes unitários para SignupUserValidator e SignupService, e testes de integração para o endpoint de cadastro - Pedro Victor - 2026-10-30 - #9 - 639cab2
+- Atualização dos diagramas de classe, sequência e fluxo de decisão no MkDocs e README do microserviço de autenticação - Pedro Victor - 2026-10-30 - #9 - 639cab2
 
 ---
 
