@@ -22,6 +22,16 @@ class UserAgreementsRepository(IRepositories):
         statement = select(UserAgreements).where(UserAgreements.id == agreement_id)
         return self.db.scalars(statement).first()
 
+    async def create_without_commit(self, session: Session, user_id: uuid.UUID, term_id: int) -> UserAgreements | bool:
+        """Create a new User agreement entity in the database without committing the transaction."""
+        user_agreement = UserAgreements(user_id=user_id, term_id=term_id)
+        try:
+            session.add(user_agreement)
+            session.flush()
+            return user_agreement, True
+        except Exception as e:
+            return str(f"Failed to create user agreement without commit. {e}"), False
+
     async def create(self, user_id: uuid.UUID, term_id: int) -> UserAgreements:
         """Persist a new User agreement entity in the database and return the refreshed record."""
         user_agreement = UserAgreements(user_id=user_id, term_id=term_id)
@@ -30,6 +40,6 @@ class UserAgreementsRepository(IRepositories):
             self.db.commit()
             self.db.refresh(user_agreement)
             return user_agreement
-        except Exception:
+        except Exception as e:
             self.db.rollback()
-            raise
+            raise Exception(f"Failed to create user agreement. {e}")

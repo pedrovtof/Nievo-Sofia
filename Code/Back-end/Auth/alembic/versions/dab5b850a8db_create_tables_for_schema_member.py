@@ -38,8 +38,8 @@ def upgrade():
             country_id int default null,
             validated_email bool default false not null,
             validated_phone bool default false not null,
-            address varchar(50) default null,
-            document varchar(50) not null,
+            address varchar(150) default null,
+            document varchar(150) null,
             created_at TIMESTAMP default CURRENT_TIMESTAMP not null,
             updated_at TIMESTAMP default CURRENT_TIMESTAMP not null
         );

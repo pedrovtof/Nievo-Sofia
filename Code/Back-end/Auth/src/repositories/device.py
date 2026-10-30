@@ -22,6 +22,16 @@ class DeviceRepository(IRepositories):
         statement = select(Device).where(Device.id == device_id)
         return self.db.scalars(statement).first()
 
+    async def create_without_commit(self, session: Session,user_id: uuid.UUID, x_device_id: str, ip_list: Optional[list[str]] = None, user_agent: Optional[str] = None) -> Device | bool:
+        """Persist a new Device entity in the database without committing the transaction."""
+        device = Device(user_id=user_id, x_device_id=x_device_id, ip_list=ip_list, user_agent=user_agent)
+        try:
+            session.add(device)
+            session.flush()
+            return device, True
+        except Exception as e:
+            return str(f"Failed to create device without commit. {e}") , False
+
     async def create(self, user_id: uuid.UUID, x_device_id: str, ip_list: Optional[list[str]] = None, user_agent: Optional[str] = None) -> Device:
         """Persist a new Device entity in the database and return the refreshed record."""
         device = Device(user_id=user_id, x_device_id=x_device_id, ip_list=ip_list, user_agent=user_agent)

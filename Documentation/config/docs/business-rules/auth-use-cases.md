@@ -16,11 +16,13 @@ flowchart LR
     %% System Boundary
     subgraph AuthSystem ["System: Sofia Auth Microservice"]
         uc_signup(["Register User Account"])
+        uc_validate_age(["Validate Age & Birth Date"])
         uc_accept_terms(["Accept Active Terms & Version"])
         uc_register_device(["Register Trusted Access Device"])
         uc_health(["Monitor Service Liveness"])
 
         %% Include relationships
+        uc_signup -.->|"<<include>>"| uc_validate_age
         uc_signup -.->|"<<include>>"| uc_accept_terms
         uc_signup -.->|"<<include>>"| uc_register_device
     end
@@ -35,11 +37,12 @@ flowchart LR
 ## 3. Specifications & Actor Capabilities
 
 ### 3.1 Actors
-- **Guest User**: Unauthenticated visitor onboarding onto the Sofia platform by submitting nickname, email, compliant password credentials, device identification headers, and legal terms consent.
+- **Guest User**: Unauthenticated visitor onboarding onto the Sofia platform by submitting nickname, email, birth date, compliant password credentials, device identification headers, and legal terms consent.
 - **Container Orchestrator / Ops**: Automated infrastructure probes monitoring microservice health and readiness.
 
 ### 3.2 Core Use Cases
-- **Register User Account (`POST /api/v1/signup/user`)**: Allows a guest user to create a new member account with a display nickname, unique email address, and complexity-validated password.
+- **Register User Account (`POST /api/v1/signup/user`)**: Allows a guest user to create a new member account with a display nickname, unique email address, birth date, and complexity-validated password.
+- **Validate Age & Birth Date**: Mandatory included capability ensuring the user's birth date meets platform minimum and maximum age eligibility criteria (`MIN_AGE_FOR_ACCOUNT` and `MAX_AGE_FOR_ACCOUNT`) and persists `member.user_details`.
 - **Accept Active Terms & Version**: Mandatory included capability verifying explicit legal consent (`accept_terms`) against an active platform terms version (`term_code` and `term_version`) and recording an auditable agreement in `signup.user_agreements`.
 - **Register Trusted Access Device**: Mandatory included capability capturing the user's client device identifier (`X-Device-Id`), `User-Agent`, and origin IP address (`member.device`) upon account creation.
 - **Monitor Service Liveness (`GET /health`)**: Diagnostic health probe confirming service operational status.
@@ -47,11 +50,14 @@ flowchart LR
 ---
 
 ## 4. Related Implementation Files
-- [`controller.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/controller.py)
-- [`service.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/service.py)
-- [`request.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/request.py)
-- [`encryption.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/encryption.py)
-- [`user.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user.py)
-- [`terms.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/terms.py)
-- [`user_agreements.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user_agreements.py)
-- [`device.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/device.py)
+- [`controller.py`](../../../../Code/Back-end/Auth/src/service/signup/controller.py)
+- [`service.py`](../../../../Code/Back-end/Auth/src/service/signup/service.py)
+- [`request.py`](../../../../Code/Back-end/Auth/src/service/signup/request.py)
+- [`encryption.py`](../../../../Code/Back-end/Auth/src/core/encryption.py)
+- [`user.py` (Entity)](../../../../Code/Back-end/Auth/src/contracts/entities/user.py)
+- [`user_details.py` (Entity)](../../../../Code/Back-end/Auth/src/contracts/entities/user_details.py)
+- [`user.py` (Repository)](../../../../Code/Back-end/Auth/src/repositories/user.py)
+- [`user_details.py` (Repository)](../../../../Code/Back-end/Auth/src/repositories/user_details.py)
+- [`terms.py` (Repository)](../../../../Code/Back-end/Auth/src/repositories/terms.py)
+- [`user_agreements.py` (Repository)](../../../../Code/Back-end/Auth/src/repositories/user_agreements.py)
+- [`device.py` (Repository)](../../../../Code/Back-end/Auth/src/repositories/device.py)

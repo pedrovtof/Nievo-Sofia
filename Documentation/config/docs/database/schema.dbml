@@ -43,7 +43,7 @@ Table signup.country {
 }
 
 Table signup.user_agreements {
-  id serial [pk, increment]
+  id uuid [pk, note: 'Unique agreement log identifier']
   user_id uuid [not null, note: 'Foreign key to member.user']
   term_id int [not null, note: 'Foreign key to signup.terms']
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
@@ -85,8 +85,8 @@ Table member.user_details {
   country_id int [note: 'Foreign key to signup.country']
   validated_email boolean [not null, default: false]
   validated_phone boolean [not null, default: false]
-  address varchar(50) [note: 'User street address']
-  document varchar(50) [not null, note: 'Official document / tax ID']
+  address varchar(150) [note: 'User street address']
+  document varchar(150) [note: 'Official document / tax ID']
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
   updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
 

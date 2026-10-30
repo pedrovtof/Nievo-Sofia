@@ -13,9 +13,10 @@ class UserAgreements(Base):
     __tablename__ = "user_agreements"
     __table_args__ = {"schema": "signup"}
 
-    id: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
+        primary_key=True,
+        default=uuid.uuid7,
     )
     user_id: Mapped[uuid.UUID] = mapped_column(
         Uuid,

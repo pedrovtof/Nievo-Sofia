@@ -27,7 +27,17 @@ class UserRepository(IRepositories):
         statement = select(User).where(User.email == user_email)
         return self.db.scalars(statement).first()
 
-    async def create(self, nick_name,email,password) -> User:
+    async def create_without_commit(self, session: Session, nick_name: str, email: str, password: str) -> User | bool:
+        """Create a new User entity in the database without committing the transaction."""
+        user = User(nick_name=nick_name, email=email, password=password)
+        try:
+            session.add(user)
+            session.flush()
+            return user, True
+        except Exception as e:
+            return str(f"Failed to create user without commit. {e}"), False
+
+    async def create(self, nick_name: str, email: str, password: str) -> User:
         """Persist a new User entity in the database and return the refreshed record."""
         user = User(nick_name=nick_name, email=email, password=password)
         try:
@@ -35,9 +45,9 @@ class UserRepository(IRepositories):
             self.db.commit()
             self.db.refresh(user)
             return user
-        except Exception:
+        except Exception as e:
             self.db.rollback()
-            raise
+            raise Exception(f"Failed to create user. {e}")
 
     def update(self, user: User) -> User:
         """Commit modifications to an existing User entity and return the refreshed record."""
@@ -46,6 +56,6 @@ class UserRepository(IRepositories):
             self.db.commit()
             self.db.refresh(user)
             return user
-        except Exception:
+        except Exception as e:
             self.db.rollback()
-            raise
+            raise Exception(f"Failed to update user. {e}")

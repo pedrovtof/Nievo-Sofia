@@ -24,14 +24,26 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-30 - [NEW] - Adição de persistência de detalhes do usuário, validação de faixa etária e transação atômica no cadastro
+
+Detalhes:
+
+- Criação da entidade UserDetails e repositório UserDetailsRepository para persistência em member.user_details - Pedro Victor - 2026-10-30 - #9 - pendente
+- Implementação de validação de data de nascimento e faixa etária mínima/máxima configurável no fluxo de cadastro - Pedro Victor - 2026-10-30 - #9 - pendente
+- Adoção de transação atômica com rollback explícito e método create_without_commit nos repositórios durante o signup - Pedro Victor - 2026-10-30 - #9 - pendente
+- Atualização das migrações Alembic para chave primária UUID em user_agreements e ajustes de tamanho de colunas em user_details - Pedro Victor - 2026-10-30 - #9 - pendente
+- Atualização completa dos diagramas Mermaid e DBML e portabilidade de links relativos na documentação MkDocs e READMEs - Pedro Victor - 2026-10-30 - #9 - pendente
+
+---
+
 2026-10-29 - [NEW] - Implementação completa do registro de usuário com criptografia bcrypt, aceite de termos e cadastro de dispositivo
 
 Detalhes:
 
-- Implementação do serviço Encryption com validação regex de senha e hash bcrypt, além dos enums EStatusBaseApi e EResponseAuth - Pedro Victor - 2026-10-29 - #9 - pendente
-- Criação da interface IRepositories, entidades ORM (Device, Terms, UserAgreements), campo password em User e respectivos repositórios - Pedro Victor - 2026-10-29 - #9 - pendente
-- Implementação das validações de headers, termos ativos, unicidade de e-mail e persistência completa em POST /api/v1/signup/user (HTTP 201) - Pedro Victor - 2026-10-29 - #9 - pendente
-- Ajustes nas migrações Alembic (member.user, member.device e grants de sequences), README do Auth e sincronização dos diagramas DBML e Mermaid - Pedro Victor - 2026-10-29 - #9 - pendente
+- Implementação do serviço Encryption com validação regex de senha e hash bcrypt, além dos enums EStatusBaseApi e EResponseAuth - Pedro Victor - 2026-10-29 - #9 - a0325fc
+- Criação da interface IRepositories, entidades ORM (Device, Terms, UserAgreements), campo password em User e respectivos repositórios - Pedro Victor - 2026-10-29 - #9 - a0325fc
+- Implementação das validações de headers, termos ativos, unicidade de e-mail e persistência completa em POST /api/v1/signup/user (HTTP 201) - Pedro Victor - 2026-10-29 - #9 - a0325fc
+- Ajustes nas migrações Alembic (member.user, member.device e grants de sequences), README do Auth e sincronização dos diagramas DBML e Mermaid - Pedro Victor - 2026-10-29 - #9 - a0325fc
 
 ---
 

@@ -57,7 +57,7 @@ Table signup.country {
 }
 
 Table signup.user_agreements {
-  id serial [pk, increment]
+  id uuid [pk, note: 'Unique agreement log identifier']
   user_id uuid [not null, note: 'Foreign key to member.user']
   term_id int [not null, note: 'Foreign key to signup.terms']
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
@@ -99,8 +99,8 @@ Table member.user_details {
   country_id int [note: 'Foreign key to signup.country']
   validated_email boolean [not null, default: false]
   validated_phone boolean [not null, default: false]
-  address varchar(50) [note: 'User street address']
-  document varchar(50) [not null, note: 'Official document / tax ID']
+  address varchar(150) [note: 'User street address']
+  document varchar(150) [note: 'Official document / tax ID']
   created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
   updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
 
@@ -167,12 +167,12 @@ TableGroup member_domain {
 ---
 
 ## 4. Related Migration Files
-- [`1e54206ef92a_create_schema_signup.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/alembic/versions/1e54206ef92a_create_schema_signup.py)
-- [`22e629197d2b_create_schema_member.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/alembic/versions/22e629197d2b_create_schema_member.py)
-- [`dab5b850a8db_create_tables_for_schema_member.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/alembic/versions/dab5b850a8db_create_tables_for_schema_member.py)
-- [`7172f95175c9_create_tables_for_schema_signup.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/alembic/versions/7172f95175c9_create_tables_for_schema_signup.py)
-- [`bb147f4b4e5c_create_index_and_references_in_members.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/alembic/versions/bb147f4b4e5c_create_index_and_references_in_members.py)
-- [`7312727d435c_create_index_and_references_in_signup.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/alembic/versions/7312727d435c_create_index_and_references_in_signup.py)
-- [`a1ec85b0f442_set_grant_for_auth_user_in_accounts.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/alembic/versions/a1ec85b0f442_set_grant_for_auth_user_in_accounts.py)
-- [`docker-compose.yml`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Infra/auth/docker-compose.yml)
-- [`schema.dbml`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Documentation/config/docs/database/schema.dbml)
+- [`1e54206ef92a_create_schema_signup.py`](../../../../Code/Back-end/Auth/alembic/versions/1e54206ef92a_create_schema_signup.py)
+- [`22e629197d2b_create_schema_member.py`](../../../../Code/Back-end/Auth/alembic/versions/22e629197d2b_create_schema_member.py)
+- [`dab5b850a8db_create_tables_for_schema_member.py`](../../../../Code/Back-end/Auth/alembic/versions/dab5b850a8db_create_tables_for_schema_member.py)
+- [`7172f95175c9_create_tables_for_schema_signup.py`](../../../../Code/Back-end/Auth/alembic/versions/7172f95175c9_create_tables_for_schema_signup.py)
+- [`bb147f4b4e5c_create_index_and_references_in_members.py`](../../../../Code/Back-end/Auth/alembic/versions/bb147f4b4e5c_create_index_and_references_in_members.py)
+- [`7312727d435c_create_index_and_references_in_signup.py`](../../../../Code/Back-end/Auth/alembic/versions/7312727d435c_create_index_and_references_in_signup.py)
+- [`a1ec85b0f442_set_grant_for_auth_user_in_accounts.py`](../../../../Code/Back-end/Auth/alembic/versions/a1ec85b0f442_set_grant_for_auth_user_in_accounts.py)
+- [`docker-compose.yml`](../../../../Code/Infra/auth/docker-compose.yml)
+- [`schema.dbml`](./schema.dbml)

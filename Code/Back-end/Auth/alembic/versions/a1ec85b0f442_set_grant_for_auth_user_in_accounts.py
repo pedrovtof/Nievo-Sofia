@@ -32,8 +32,6 @@ def upgrade():
         ALTER DEFAULT PRIVILEGES IN SCHEMA signup GRANT USAGE, SELECT ON SEQUENCES TO platform_auth;
         GRANT ALL ON SEQUENCE signup.country_id_seq TO platform_auth;
         GRANT ALL ON SEQUENCE signup.terms_id_seq TO platform_auth;
-        GRANT ALL ON SEQUENCE signup.user_agreements_id_seq TO platform_auth;
-
     """)
     pass
 
@@ -54,6 +52,5 @@ def downgrade():
         ALTER DEFAULT PRIVILEGES IN SCHEMA signup REVOKE USAGE, SELECT ON SEQUENCES FROM platform_auth;
         REVOKE ALL ON SEQUENCE signup.country_id_seq FROM platform_auth;
         REVOKE ALL ON SEQUENCE signup.terms_id_seq FROM platform_auth;
-        REVOKE ALL ON SEQUENCE signup.user_agreements_id_seq FROM platform_auth;
     """)
     pass

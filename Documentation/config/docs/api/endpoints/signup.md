@@ -23,6 +23,7 @@ sequenceDiagram
     box Infrastructure Layer
         participant SessionMgr as SessionManager
         participant UserRepo as UserRepository
+        participant UserDetailsRepo as UserDetailsRepository
         participant TermsRepo as TermsRepository
         participant AgreeRepo as UserAgreementsRepository
         participant DeviceRepo as DeviceRepository
@@ -31,7 +32,7 @@ sequenceDiagram
 
     Client ->> App: POST /api/v1/signup/user (Headers + SignupUserRequest)
     activate App
-    App ->> App: Validate SignupUserRequest via Pydantic
+    App ->> App: Validate SignupUserRequest via Pydantic (inc. PastDate born_date)
 
     alt Invalid Request Schema (422)
         App -->> Client: 422 Unprocessable Entity (Validation Errors)
@@ -45,71 +46,107 @@ sequenceDiagram
         activate Service
 
         alt Missing IP / User-Agent / X-Device-Id or Terms Not Accepted
-            Service -->> Controller: 400 Bad Request (BaseApiError IDs 4, 5, 6, 7)
+            Service -->> Controller: (400, BaseApiError IDs 4, 5, 6, 7)
+            Controller ->> Controller: Log warning if BaseApiError
             Controller -->> App: JSONResponse (400)
-            App ->> SessionMgr: Close DB session
             App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [id]}
         else Required Metadata & Consent Present
-            Service ->>+ UserRepo: get_by_mail(email)
-            UserRepo ->>+ DB: SELECT FROM member.user WHERE email = ?
-            DB -->>- UserRepo: User record or None
-            UserRepo -->>- Service: Optional[User]
+            Service ->> Service: Calculate age from born_date
 
-            alt Email Already Registered
-                Service -->> Controller: 400 Bad Request (BaseApiError ID 1)
+            alt Age < MIN_AGE_FOR_ACCOUNT or Age > MAX_AGE_FOR_ACCOUNT
+                Service -->> Controller: (400, BaseApiError ID 11)
+                Controller ->> Controller: Log warning if BaseApiError
                 Controller -->> App: JSONResponse (400)
-                App ->> SessionMgr: Close DB session
-                App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [1]}
-            else Email Available
-                Service ->>+ TermsRepo: get_by_tag_and_version(term_code, term_version)
-                TermsRepo ->>+ DB: SELECT FROM signup.terms WHERE tag = ? AND version = ? AND active = true
-                DB -->>- TermsRepo: Terms record or None
-                TermsRepo -->>- Service: Optional[Terms]
+                App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [11]}
+            else Valid Age Range
+                Service ->>+ UserRepo: get_by_mail(email)
+                UserRepo ->>+ DB: SELECT FROM member.user WHERE email = ?
+                DB -->>- UserRepo: User record or None
+                UserRepo -->>- Service: Optional[User]
 
-                alt Invalid or Inactive Term
-                    Service -->> Controller: 400 Bad Request (BaseApiError ID 3)
+                alt Email Already Registered
+                    Service -->> Controller: (400, BaseApiError ID 1)
+                    Controller ->> Controller: Log warning if BaseApiError
                     Controller -->> App: JSONResponse (400)
-                    App ->> SessionMgr: Close DB session
-                    App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [3]}
-                else Active Term Found
-                    Service ->>+ Crypto: validate_password(password)
-                    Crypto -->>- Service: bool (regex complexity match)
+                    App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [1]}
+                else Email Available
+                    Service ->>+ TermsRepo: get_by_tag_and_version(term_code, term_version)
+                    TermsRepo ->>+ DB: SELECT FROM signup.terms WHERE tag = ? AND version = ? AND active = true
+                    DB -->>- TermsRepo: Terms record or None
+                    TermsRepo -->>- Service: Optional[Terms]
 
-                    alt Password Fails Complexity Policy
-                        Service -->> Controller: 400 Bad Request (BaseApiError ID 2)
+                    alt Invalid or Inactive Term
+                        Service -->> Controller: (400, BaseApiError ID 3)
+                        Controller ->> Controller: Log warning if BaseApiError
                         Controller -->> App: JSONResponse (400)
-                        App ->> SessionMgr: Close DB session
-                        App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [2]}
-                    else Password Valid
-                        Service ->>+ Crypto: encrypt_password(password)
-                        Crypto -->>- Service: bcrypt password hash
+                        App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [3]}
+                    else Active Term Found
+                        Service ->>+ Crypto: validate_password(password)
+                        Crypto -->>- Service: bool (regex complexity match)
 
-                        Service ->>+ UserRepo: create(nick_name, email, hash_password)
-                        UserRepo ->>+ DB: INSERT INTO member.user ...
-                        DB -->>- UserRepo: Persisted User
-                        UserRepo -->>- Service: new_user
+                        alt Password Fails Complexity Policy
+                            Service -->> Controller: (400, BaseApiError ID 2)
+                            Controller ->> Controller: Log warning if BaseApiError
+                            Controller -->> App: JSONResponse (400)
+                            App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [2]}
+                        else Password Valid
+                            Service ->>+ Crypto: encrypt_password(password)
+                            Crypto -->>- Service: bcrypt password hash
 
-                        Service ->>+ AgreeRepo: create(new_user.id, term.id)
-                        AgreeRepo ->>+ DB: INSERT INTO signup.user_agreements ...
-                        DB -->>- AgreeRepo: Persisted UserAgreements
-                        AgreeRepo -->>- Service: new_user_agreement
+                            Note over Service,DB: Transaction Pipeline (create_without_commit)
 
-                        Service ->>+ DeviceRepo: create(new_user.id, x_device_id, [client_ip], user_agent)
-                        DeviceRepo ->>+ DB: INSERT INTO member.device ...
-                        DB -->>- DeviceRepo: Persisted Device
-                        DeviceRepo -->>- Service: new_device
+                            Service ->>+ UserRepo: create_without_commit(session, nick_name, email, hash_password)
+                            UserRepo ->>+ DB: INSERT INTO member.user ... (flush)
+                            DB -->>- UserRepo: new_user, success
+                            UserRepo -->>- Service: (new_user, true)
 
-                        alt Unhandled Runtime / Persistence Exception
-                            Service -->> Handler: Exception raised
-                            Handler ->> Handler: Log error via CustomLogger & build BaseApiError
-                            Handler -->> App: 500 Internal Server Error JSONResponse
-                            App ->> SessionMgr: Rollback & close DB session
-                            App -->> Client: 500 Internal Server Error {"status": "ERROR"}
-                        else Registration Completed
-                            Service -->> Controller: 201 Created (BaseApiSuccess)
-                            Controller -->> App: JSONResponse (201)
-                            App ->> SessionMgr: Close DB session
-                            App -->> Client: 201 Created {"status": "SUCESS", "message": "User registered successfully.", "data": null}
+                            alt User Creation Failed
+                                Service ->> DB: rollback()
+                                Service -->> Controller: (400, BaseApiError ID 3)
+                                Controller -->> App: JSONResponse (400)
+                                App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [3]}
+                            else User Created
+                                Service ->>+ UserDetailsRepo: create_without_commit(session, new_user.id, born_date)
+                                UserDetailsRepo ->>+ DB: INSERT INTO member.user_details ... (flush)
+                                DB -->>- UserDetailsRepo: new_user_details, success
+                                UserDetailsRepo -->>- Service: (new_user_details, true)
+
+                                alt User Details Creation Failed
+                                    Service ->> DB: rollback()
+                                    Service -->> Controller: (400, BaseApiError ID 10)
+                                    Controller -->> App: JSONResponse (400)
+                                    App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [10]}
+                                else User Details Created
+                                    Service ->>+ AgreeRepo: create_without_commit(session, new_user.id, term.id)
+                                    AgreeRepo ->>+ DB: INSERT INTO signup.user_agreements ... (flush)
+                                    DB -->>- AgreeRepo: new_user_agreement, success
+                                    AgreeRepo -->>- Service: (new_user_agreement, true)
+
+                                    alt Agreement Creation Failed
+                                        Service ->> DB: rollback()
+                                        Service -->> Controller: (400, BaseApiError ID 3)
+                                        Controller -->> App: JSONResponse (400)
+                                        App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [3]}
+                                    else Agreement Created
+                                        Service ->>+ DeviceRepo: create_without_commit(session, new_user.id, x_device_id, [client_ip], user_agent)
+                                        DeviceRepo ->>+ DB: INSERT INTO member.device ... (flush)
+                                        DB -->>- DeviceRepo: new_device, success
+                                        DeviceRepo -->>- Service: (new_device, true)
+
+                                        alt Device Creation Failed
+                                            Service ->> DB: rollback()
+                                            Service -->> Controller: (400, BaseApiError ID 8)
+                                            Controller -->> App: JSONResponse (400)
+                                            App -->> Client: 400 Bad Request {"status": "ERROR", "errors": [8]}
+                                        else All Entities Created
+                                            Service ->> DB: commit()
+                                            Service -->> Controller: (201, BaseApiSuccess)
+                                            Controller -->> App: JSONResponse (201)
+                                            App -->> Client: 201 Created {"status": "SUCESS", "message": "User registered successfully.", "data": null}
+                                        end
+                                    end
+                                end
+                            end
                         end
                     end
                 end
@@ -146,6 +183,7 @@ sequenceDiagram
 | `accept_terms` | `boolean` | Yes | Explicit confirmation of terms acceptance (`true` required). |
 | `term_code` | `string` | Yes | Identifier tag of the accepted terms document (1–50 characters). |
 | `term_version` | `integer` | Yes | Version number of the accepted terms document (`>= 1`, must be active). |
+| `born_date` | `PastDate` | Yes | User birth date (`YYYY-MM-DD`); validated against `MIN_AGE_FOR_ACCOUNT` and `MAX_AGE_FOR_ACCOUNT`. |
 
 ```json
 {
@@ -154,7 +192,8 @@ sequenceDiagram
   "password": "Secure@123",
   "accept_terms": true,
   "term_code": "TERMS_OF_USE",
-  "term_version": 1
+  "term_version": 1,
+  "born_date": "1995-05-15"
 }
 ```
 
@@ -192,6 +231,9 @@ sequenceDiagram
 | `6` | `SIGNUP_400_SIGNUP_USER_USER_AGENT_NOT_FOUND` | `"The user agent could not be determined"` |
 | `7` | `SIGNUP_400_SIGNUP_USER_DEVICE_ID_NOT_FOUND` | `"The device ID could not be determined"` |
 | `8` | `SIGNUP_400_SIGNUP_USER_NOT_CREATED_DEVICE` | `"Sorry! that user could not be created, please try again later"` |
+| `9` | `SIGNUP_201_SIGNUP_USER_CREATED` | `"User registered successfully."` |
+| `10` | `SIGNUP_400_SIGNUP_USER_NOT_CREATED_USER_DETAILS` | `"Sorry! that user could not be created, please try again later"` |
+| `11` | `SIGNUP_400_SIGNUP_USER_WITH_INVALID_BIRTH_DATE` | `"Please validate the born date"` |
 
 #### Schema Validation Error (`422 Unprocessable Entity`)
 ```json
@@ -223,19 +265,22 @@ sequenceDiagram
 ---
 
 ## 4. Related Implementation Files
-- [`main.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/main.py)
-- [`router.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/api/router.py)
-- [`controller.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/controller.py)
-- [`service.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/service.py)
-- [`request.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/service/signup/request.py)
-- [`encryption.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/encryption.py)
-- [`Eresponse_auth.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/enum/Eresponse_auth.py)
-- [`Estatus_base_api.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/enum/Estatus_base_api.py)
-- [`session_manager.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/database/session_manager.py)
-- [`user.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user.py)
-- [`terms.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/terms.py)
-- [`user_agreements.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/user_agreements.py)
-- [`device.py` (Repository)](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/repositories/device.py)
-- [`base_api_sucess.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_sucess.py)
-- [`base_api_error.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/schema/default/base_api_error.py)
-- [`server_exception_handler.py`](file:///home/pedrovotf/Desktop/Projects/Nievo-Sofia/Code/Back-end/Auth/src/core/middleware/server_exception_handler.py)
+- [`main.py`](../../../../../Code/Back-end/Auth/src/main.py)
+- [`router.py`](../../../../../Code/Back-end/Auth/src/api/router.py)
+- [`controller.py`](../../../../../Code/Back-end/Auth/src/service/signup/controller.py)
+- [`service.py`](../../../../../Code/Back-end/Auth/src/service/signup/service.py)
+- [`request.py`](../../../../../Code/Back-end/Auth/src/service/signup/request.py)
+- [`encryption.py`](../../../../../Code/Back-end/Auth/src/core/encryption.py)
+- [`Eresponse_auth.py`](../../../../../Code/Back-end/Auth/src/core/enum/Eresponse_auth.py)
+- [`Estatus_base_api.py`](../../../../../Code/Back-end/Auth/src/core/enum/Estatus_base_api.py)
+- [`session_manager.py`](../../../../../Code/Back-end/Auth/src/core/database/session_manager.py)
+- [`user.py` (Entity)](../../../../../Code/Back-end/Auth/src/contracts/entities/user.py)
+- [`user_details.py` (Entity)](../../../../../Code/Back-end/Auth/src/contracts/entities/user_details.py)
+- [`user.py` (Repository)](../../../../../Code/Back-end/Auth/src/repositories/user.py)
+- [`user_details.py` (Repository)](../../../../../Code/Back-end/Auth/src/repositories/user_details.py)
+- [`terms.py` (Repository)](../../../../../Code/Back-end/Auth/src/repositories/terms.py)
+- [`user_agreements.py` (Repository)](../../../../../Code/Back-end/Auth/src/repositories/user_agreements.py)
+- [`device.py` (Repository)](../../../../../Code/Back-end/Auth/src/repositories/device.py)
+- [`base_api_sucess.py`](../../../../../Code/Back-end/Auth/src/schema/default/base_api_sucess.py)
+- [`base_api_error.py`](../../../../../Code/Back-end/Auth/src/schema/default/base_api_error.py)
+- [`server_exception_handler.py`](../../../../../Code/Back-end/Auth/src/core/middleware/server_exception_handler.py)

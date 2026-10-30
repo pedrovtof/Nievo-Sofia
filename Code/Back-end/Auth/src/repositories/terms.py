@@ -27,6 +27,16 @@ class TermsRepository(IRepositories):
         statement = select(Terms).where((Terms.tag == tag) & (Terms.version == version) & (Terms.active == True))
         return self.db.scalars(statement).first()
 
+    async def create_without_commit(self, session: Session, name: str, tag: str, content: str, version: int = 1, active: bool = False) -> Terms | bool:
+        """Create a new term entity in the database without committing the transaction."""
+        term = Terms(name=name, tag=tag, content=content, version=version, active=active)
+        try:
+            session.add(term)
+            session.flush()
+            return term, True
+        except Exception as e:
+            return str(f"Failed to create term without commit. {e}"), False
+
     async def create(self, name: str, tag: str, content: str, version: int = 1, active: bool = False) -> Terms:
         """Persist a new term entity in the database and return the refreshed record."""
         term = Terms(name=name, tag=tag, content=content, version=version, active=active)
@@ -35,6 +45,7 @@ class TermsRepository(IRepositories):
             self.db.commit()
             self.db.refresh(term)
             return term
-        except Exception:
+        except Exception as e:
             self.db.rollback()
-            raise
+            raise Exception(f"Failed to create term with commit. {e}")
+

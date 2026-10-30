@@ -14,6 +14,8 @@ CONTACT_EMAIL=<support@example.com>
 LICENSE_NAME=Apache 2.0
 LICENSE_URL=<http://www.apache.org/licenses/LICENSE-2.0.html>
 CORS_ALLOW_ORIGINS=<http://localhost,http://localhost:8080>,*
+MIN_AGE_FOR_ACCOUNT=8
+MAX_AGE_FOR_ACCOUNT=90
 
 ## Database & Migration
 

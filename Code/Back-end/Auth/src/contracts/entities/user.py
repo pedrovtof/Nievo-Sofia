@@ -50,7 +50,6 @@ class User(Base):
         Text,
         unique=False,
         nullable=False,
-        default=None,
     )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime,

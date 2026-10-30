@@ -30,7 +30,7 @@ def upgrade():
         );
 
         CREATE TABLE IF NOT EXISTS signup.user_agreements (
-            id serial primary key,
+            id uuid primary key,
             user_id uuid not null,
             term_id int not null,
             created_at TIMESTAMP default CURRENT_TIMESTAMP not null

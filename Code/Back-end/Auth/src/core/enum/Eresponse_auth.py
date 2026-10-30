@@ -29,3 +29,9 @@ class EResponseAuth(Enum):
     SIGNUP_400_SIGNUP_USER_DEVICE_ID_NOT_FOUND = (7,"The device ID could not be determined")
 
     SIGNUP_400_SIGNUP_USER_NOT_CREATED_DEVICE = (8,"Sorry! that user could not be created, please try again later")
+
+    SIGNUP_201_SIGNUP_USER_CREATED = (9,"User registered successfully.")
+
+    SIGNUP_400_SIGNUP_USER_NOT_CREATED_USER_DETAILS = (10,"Sorry! that user could not be created, please try again later")
+
+    SIGNUP_400_SIGNUP_USER_WITH_INVALID_BIRTH_DATE = (11,"Please validate the born date")

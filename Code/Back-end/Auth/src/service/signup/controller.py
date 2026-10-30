@@ -1,10 +1,17 @@
 """HTTP route controller for user registration endpoints."""
 
+from http import HTTPStatus
+
 from fastapi import APIRouter, Depends, Header, Request
+from fastapi.responses import JSONResponse
 from schema.default.base_api_response import BaseApiResponse
+from schema.default.base_api_error import BaseApiError
+from core.logging import CustomLogger
 from typing import Optional
 from service.signup.request import SignupUserRequest
 from service.signup.service import SignupService
+
+custom_logger= CustomLogger(__name__)
 
 router = APIRouter()
 
@@ -32,4 +39,12 @@ async def signup(
     request_contract.client_ip = client_ip
     request_contract.user_agent = user_agent
     request_contract.x_device_id = x_device_id
-    return await signup_service.signup_user(request_contract)
+    
+    (status,response) = await signup_service.signup_user(request_contract)
+    if type(response) == BaseApiError:
+        custom_logger.warning(f'Error during signup_service.signup_user  device={x_device_id} - response={response}')
+
+    return JSONResponse(
+        status_code=status,
+        content=response.model_dump(mode="json"),
+    )
