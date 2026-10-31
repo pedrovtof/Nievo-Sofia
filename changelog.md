@@ -24,6 +24,16 @@ YYYY-MM-DD - [TYPE] - [GENERAL-DESCRIPTION]
 
 ### Changelog
 
+2026-10-31 - [BUILD] - Migração das regras de IA e skills para o submódulo Nievo-AI
+
+Detalhes:
+
+- Adição do submódulo Nievo-AI (Nievo-Skills) e criação de links simbólicos para AI e .agents/skills - Pedro Victor - 2026-10-31 - Card #11 - pendente
+- Atualização do GEMINI.md para apontar para as diretrizes no submódulo Nievo-AI - Pedro Victor - 2026-10-31 - Card #11 - pendente
+
+---
+
+
 2026-10-14 - [BUILD] - Alteração do gatilho do workflow do Gemini para execução manual
 
 Detalhes:

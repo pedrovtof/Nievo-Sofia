@@ -1,1 +1,0 @@
-../../../AI/GEMINI/skills/git/commit.md
