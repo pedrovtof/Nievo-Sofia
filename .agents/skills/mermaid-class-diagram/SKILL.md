@@ -1,1 +1,0 @@
-../../../AI/GEMINI/skills/documentation/mermaid/class-diagram.md
