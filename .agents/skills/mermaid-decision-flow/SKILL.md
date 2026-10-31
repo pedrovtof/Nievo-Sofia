@@ -1,1 +1,0 @@
-../../../AI/GEMINI/skills/documentation/mermaid/decision-flow-diagram.md
