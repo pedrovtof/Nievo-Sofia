@@ -1,0 +1,25 @@
+services:
+  postgres_auth_a:
+    image: postgres:${POSTGRES_VERSION}
+    restart: always
+    container_name: postgres_node_auth_a
+    environment:
+      POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_DEFAULT_USER_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+    volumes:
+      - ./postgres/node_auth_a/data:/var/lib/postgresql/data
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    ports:
+      - "5432:${POSTGRES_DEFAULT_PORT}"
+    command: [ "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf" ]
+    networks:
+      - cluster_postgres
+
+networks:
+  cluster_postgres:
+    driver: bridge
+
+volumes:
+  postgres_auth_a:
