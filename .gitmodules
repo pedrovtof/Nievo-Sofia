@@ -1,3 +1,4 @@
 [submodule "Nievo-AI"]
 	path = Nievo-AI
 	url = https://github.com/pedrovtof/Nievo-Skills.git
+	branch = develop
